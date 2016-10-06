@@ -29,7 +29,7 @@ describe('hounds', function() {
     })
 
     afterEach(() => {
-        this.instance.end()
+        this.instance.leash()
     })
 
     after(() => {

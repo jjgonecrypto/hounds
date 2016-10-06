@@ -13,9 +13,9 @@ A utility to smoke test a site by releasing hounds to follow all internal links 
 ```javascript
 const hounds = require('hounds')()
 
-hounds.release().then(errors => {
+hounds.release({ url: 'http://localhost:8080' }).then(errors => {
     // errors -> list of console warnings and errors 
-    hounds.end()
+    hounds.leash()
 })
 ```
 

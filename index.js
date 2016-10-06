@@ -4,7 +4,7 @@ const phantomjs = require('phantomjs-prebuilt')
 const webdriverio = require('webdriverio')
 
 module.exports = () => {
-    const whenPhantomStarts = phantomjs.run('--webdriver=4444').then(phantom => instance.end = () => phantom.kill())
+    const whenPhantomStarts = phantomjs.run('--webdriver=4444').then(phantom => instance.leash = () => phantom.kill())
 
     const instance = {
         release(options) {
