@@ -1,0 +1,32 @@
+{
+  "name": "hounds",
+  "version": "0.1.0",
+  "description": "A utility to smoke test a site by releasing hounds to follow all internal links and log any console errors",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -t 5000 test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justinjmoses/hounds.git"
+  },
+  "keywords": [
+    "monkey-test",
+    "smoke-test",
+    "fuzz-buster",
+    "console",
+    "logging"
+  ],
+  "author": "justinjmoses",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/justinjmoses/hounds/issues"
+  },
+  "homepage": "https://github.com/justinjmoses/hounds#readme",
+  "devDependencies": {
+    "express": "^4.14.0",
+    "mocha": "^3.1.0",
+    "phantomjs-prebuilt": "^2.1.13",
+    "webdriverio": "^4.2.16"
+  }
+}
