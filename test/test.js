@@ -1,5 +1,7 @@
 'use strict'
 
+const Writable = require('stream').Writable
+
 const express = require('express')
 const path = require('path')
 const assert = require('assert')
@@ -21,11 +23,20 @@ describe('hounds', function() {
     })
 
     it('detects the single console error', done => {
-        this.instance.release({ url: 'http://localhost:4441' }).then(response => {
-            assert.equal(1, response.length, 'Console error is detected')
-            assert.equal('Error: This is supposed to happen', response[0].message, 'Console error message is caught')
-            assert.equal(1, response[0].stackTrace.length, 'Console error stacktrace is captured')
-        }).then(done, done)
+        const errorStream = this.instance.release({ url: 'http://localhost:4441' })
+
+        const ws = Writable({ objectMode: true })
+        ws._write = function(chunk, enc, next) {
+            if (chunk && chunk.length) {
+                assert.equal(1, chunk.length, 'Console error is detected')
+                assert.equal('Error: This is supposed to happen', chunk[0].message, 'Console error message is caught')
+                assert.equal(1, chunk[0].stackTrace.length, 'Console error stacktrace is captured')
+                done()
+            }
+            next()
+        }
+
+        errorStream.on('error', done).pipe(ws)
     })
 
     afterEach(() => {
