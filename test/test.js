@@ -25,7 +25,7 @@ describe('hounds', function() {
     it('detects the single console error', done => {
         const errorStream = this.instance.release({ url: 'http://localhost:4441' })
 
-        const ws = Writable({ objectMode: true })
+        const ws = new Writable({ objectMode: true })
         ws._write = function(chunk, enc, next) {
             if (chunk && chunk.length) {
                 assert.equal(1, chunk.length, 'Console error is detected')

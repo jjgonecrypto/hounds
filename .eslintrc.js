@@ -7,6 +7,7 @@ module.exports = {
         'indent': [2, 4],
         'no-unused-vars': 2,
         'semi': [2, 'never'],
-        'no-undef': 2
+        'no-undef': 2,
+        'new-cap': 2
     }
 };

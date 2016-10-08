@@ -5,8 +5,9 @@ const Readable = require('stream').Readable
 const phantomjs = require('phantomjs-prebuilt')
 const webdriverio = require('webdriverio')
 
-
 module.exports = () => {
+    let instance = {}
+
     const whenPhantomStarts =
         phantomjs
         .run('--webdriver=4444')
@@ -15,53 +16,52 @@ module.exports = () => {
             process.on('exit', instance.leash) // ensure killed
         })
 
-    const instance = {
-        release(options) {
+    instance.release = options => {
 
-            const pages = { [options.url]: options }
+        const pages = { [options.url]: options }
 
-            let errors = []
+        let errors = []
 
-            const rs = new Readable({ objectMode: true })
+        const rs = new Readable({ objectMode: true })
 
-            const errorHandler = e => rs.emit('error', e)
+        const errorHandler = e => rs.emit('error', e)
 
-            rs._read = () => {
-                if (errors.length) {
-                    rs.push(errors)
-                    errors = []
-                }
-
-                if (!Object.keys(pages).length) {
-                    rs.push(null)
-                } else {
-                    setTimeout(() => rs.push(), 250)
-                }
+        rs._read = () => {
+            if (errors.length) {
+                rs.push(errors)
+                errors = []
             }
 
-            whenPhantomStarts.then(() => {
-                const browser = webdriverio.remote({ desiredCapabilities: { browserName: 'phantomjs' } }).init()
+            if (!Object.keys(pages).length) {
+                rs.push(null)
+            } else {
+                setTimeout(() => rs.push(), 250)
+            }
+        }
 
-                browser.url(options.url)
-                .log('browser')
-                .then(logs => logs.value.filter(log => log.level === 'WARNING' || log.level === 'ERROR'))
-                .then(warningsAndErrors => {
-                    warningsAndErrors.map(entry => {
-                        const message = entry.message
-                        const lines = message.split('\n').map(l => l.trim())
-                        entry.message = lines[0]
-                        entry.stackTrace = lines.slice(1)
-                        return entry
-                    }).forEach(entry => errors.push(entry))
-                })
-                .then(() => {
-                    delete pages[options.url]
-                }, errorHandler)
+        whenPhantomStarts.then(() => {
+            const browser = webdriverio.remote({ desiredCapabilities: { browserName: 'phantomjs' } }).init()
 
+            browser.url(options.url)
+            .log('browser')
+            .then(logs => logs.value.filter(log => log.level === 'WARNING' || log.level === 'ERROR'))
+            .then(warningsAndErrors => {
+                warningsAndErrors.map(entry => {
+                    const message = entry.message
+                    const lines = message.split('\n').map(l => l.trim())
+                    entry.message = lines[0]
+                    entry.stackTrace = lines.slice(1)
+                    return entry
+                }).forEach(entry => errors.push(entry))
+            })
+            .then(() => {
+                delete pages[options.url]
             }, errorHandler)
 
-            return rs
-        }
+        }, errorHandler)
+
+        return rs
+
     }
 
     return instance

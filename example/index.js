@@ -19,7 +19,7 @@ const quarry = hounds.release({ url: 'http://localhost:4441' })
         process.exit()
     })
 
-const ws = Writable({ objectMode: true })
+const ws = new Writable({ objectMode: true })
 ws._write = function(chunk, enc, next) {
     if (chunk && chunk.length) {
         console.log(chunk)
