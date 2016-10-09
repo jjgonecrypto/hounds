@@ -17,6 +17,7 @@ Currently
 * ~~`0.2.0` Supports a single url with a promise~~
 * ~~`0.3.0` Stream support (instead of promises)~~
     * ~~`0.3.1` Migrated to [nightmare](https://github.com/segmentio/nightmare) - 3x faster than Webdriver/Phantom2 and option to open up devTools~~
+    * ~~`0.3.2` Stream usage cleanup~~
 * `0.4.0` Handle console errors that occur after `DOMContentLoaded` (with configurable timeout)
 * `0.5.0` Follow and track all internal links
 * `0.6.0` Allow for `setup`/`teardown` actions in webdriver/selenium (such as login) 
