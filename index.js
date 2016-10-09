@@ -4,8 +4,6 @@ const Readable = require('stream').Readable
 const Nightmare = require('nightmare')
 
 exports.release = (options) => {
-    const pages = { [options.url]: options }
-
     const quarry = new Readable({
         objectMode: true,
         read: () => {}
@@ -25,7 +23,6 @@ exports.release = (options) => {
         .goto(options.url)
         .end()
         .then(() => {
-            delete pages[options.url]
             quarry.push(null)
         })
         .catch(e => quarry.emit('error', e))
