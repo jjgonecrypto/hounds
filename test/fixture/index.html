@@ -1,8 +1,20 @@
 <html>
+    <head>
+        <script> throw Error('Error inline script')</script>
+    </head>
     <body>
         <a href="/first.html">first</a>
         <script>
-            throw Error('This is supposed to happen')
+            document.addEventListener('DOMContentLoaded', function (event) {
+                console.log('page loaded')
+
+                throw Error('Error after load')
+            })
+
+            console.warn('test')
+
+            console.error('error before load')
+
         </script>
     </body>
 </html>

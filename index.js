@@ -1,69 +1,48 @@
 'use strict'
 
 const Readable = require('stream').Readable
+const Nightmare = require('nightmare')
 
-const phantomjs = require('phantomjs-prebuilt')
-const webdriverio = require('webdriverio')
+exports.release = (options) => {
+    const pages = { [options.url]: options }
 
-module.exports = () => {
-    let instance = {}
+    let errors = []
 
-    const whenPhantomStarts =
-        phantomjs
-        .run('--webdriver=4444')
-        .then(phantom => {
-            instance.leash = () => phantom.kill()
-            process.on('exit', instance.leash) // ensure killed
-        })
+    let quarry = new Readable({ objectMode: true })
 
-    instance.release = options => {
+    const errorHandler = e => quarry.emit('error', e)
 
-        const pages = { [options.url]: options }
-
-        let errors = []
-
-        const rs = new Readable({ objectMode: true })
-
-        const errorHandler = e => rs.emit('error', e)
-
-        rs._read = () => {
-            if (errors.length) {
-                rs.push(errors)
-                errors = []
-            }
-
-            if (!Object.keys(pages).length) {
-                rs.push(null)
-            } else {
-                setTimeout(() => rs.push(), 250)
-            }
+    quarry._read = () => {
+        if (errors.length) {
+            errors.forEach(err => quarry.push(err))
+            errors = []
         }
 
-        whenPhantomStarts.then(() => {
-            const browser = webdriverio.remote({ desiredCapabilities: { browserName: 'phantomjs' } }).init()
-
-            browser.url(options.url)
-            .log('browser')
-            .then(logs => logs.value.filter(log => log.level === 'WARNING' || log.level === 'ERROR'))
-            .then(warningsAndErrors => {
-                warningsAndErrors.map(entry => {
-                    const message = entry.message
-                    const lines = message.split('\n').map(l => l.trim())
-                    entry.message = lines[0]
-                    entry.stackTrace = lines.slice(1)
-                    return entry
-                }).forEach(entry => errors.push(entry))
-            })
-            .then(() => {
-                delete pages[options.url]
-            }, errorHandler)
-
-        }, errorHandler)
-
-        return rs
-
+        if (!Object.keys(pages).length) {
+            quarry.push(null)
+            quarry = null
+        } else {
+            setTimeout(() => { if (quarry) quarry.push() }, 10)
+        }
     }
 
-    return instance
+    const nightmare = new Nightmare(options.nightmare)
 
+    nightmare
+        .on('page', function(type, message, stack) {
+            const stackTrace = stack.split('\n').map(l => l.trim())
+            errors.push({
+                url: options.url,
+                message,
+                stackTrace
+            })
+        })
+        .goto(options.url)
+        .end()
+        .then(() => {
+            delete pages[options.url]
+        })
+        .catch(errorHandler)
+
+    return quarry
 }

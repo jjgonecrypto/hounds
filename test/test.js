@@ -19,28 +19,45 @@ describe('hounds', function() {
     })
 
     beforeEach(() => {
-        this.instance = hounds()
+        this.options = { url: 'http://localhost:4441' }
+        this.quarry = hounds.release(this.options)
+
+        this.assertErrorReceived = () => {}
+
+        this.output = new Writable({ objectMode: true })
+        let callCount = 0
+        this.output._write = (chunk, enc, next) => {
+            if (chunk) {
+                callCount++
+                this.assertErrorReceived(chunk, callCount)
+            }
+
+            next()
+        }
     })
 
     it('detects the single console error', done => {
-        const errorStream = this.instance.release({ url: 'http://localhost:4441' })
-
-        const ws = new Writable({ objectMode: true })
-        ws._write = function(chunk, enc, next) {
-            if (chunk && chunk.length) {
-                assert.equal(1, chunk.length, 'Console error is detected')
-                assert.equal('Error: This is supposed to happen', chunk[0].message, 'Console error message is caught')
-                assert.equal(1, chunk[0].stackTrace.length, 'Console error stacktrace is captured')
-                done()
-            }
-            next()
+        this.assertErrorReceived = (chunk, callCount) => {
+            if (callCount !== 1) return
+            assert.equal(this.options.url, chunk.url, 'URL is passed through')
+            assert.equal('Uncaught Error: Error inline script', chunk.message, 'Page error while loading is caught')
+            assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+            done()
         }
 
-        errorStream.on('error', done).pipe(ws)
+        this.quarry.on('error', done).pipe(this.output)
     })
 
-    afterEach(() => {
-        this.instance.leash()
+    it('detects the error after DOM loaded', done => {
+        this.assertErrorReceived = (chunk, callCount) => {
+            if (callCount !== 2) return
+            assert.equal(this.options.url, chunk.url, 'URL is passed through')
+            assert.equal('Uncaught Error: Error after load', chunk.message, 'Page error after DOM is loaded')
+            assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+            done()
+        }
+
+        this.quarry.on('error', done).pipe(this.output)
     })
 
     after(() => {
