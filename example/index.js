@@ -15,10 +15,12 @@ const hunt = hounds.release({ url: 'http://localhost:4441' })
     .on('error', console.error)
     .on('end', process.exit)
 
-const quarry = new Writable({ objectMode: true })
-quarry._write = function(chunk, enc, next) {
-    if (chunk) console.dir(chunk)
-    next()
-}
+const quarry = new Writable({
+    objectMode: true,
+    write: (chunk, enc, next) => {
+        console.dir(chunk)
+        next()
+    }
+})
 
 hunt.pipe(quarry)

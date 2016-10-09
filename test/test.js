@@ -24,16 +24,15 @@ describe('hounds', function() {
 
         this.assertErrorReceived = () => {}
 
-        this.quarry = new Writable({ objectMode: true })
         let callCount = 0
-        this.quarry._write = (chunk, enc, next) => {
-            if (chunk) {
+        this.quarry = new Writable({
+            objectMode: true,
+            write: (chunk, enc, next) => {
                 callCount++
                 this.assertErrorReceived(chunk, callCount)
+                next()
             }
-
-            next()
-        }
+        })
     })
 
     it('detects the single console error', done => {

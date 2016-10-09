@@ -2,7 +2,7 @@
 
 ![](https://media.giphy.com/media/TVCqfX7rLyMuY/giphy.gif)
 
-A utility to smoke test a site by releasing hounds to follow all internal links and log any console errors. Uses webdriver to drive PhantomJS 2.1.1
+A utility to smoke test a site by releasing hounds to follow all internal links and log any console errors. Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
 
 [![CircleCI](https://circleci.com/gh/justinjmoses/hounds.svg?style=svg)](https://circleci.com/gh/justinjmoses/hounds)
 
@@ -20,7 +20,7 @@ Currently
     * ~~`0.3.2` Stream usage cleanup~~
 * `0.4.0` Handle console errors that occur after `DOMContentLoaded` (with configurable timeout)
 * `0.5.0` Follow and track all internal links
-* `0.6.0` Allow for `setup`/`teardown` actions in webdriver/selenium (such as login) 
+* `0.6.0` Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
 
 ##Usage
 
@@ -32,11 +32,13 @@ const hunt = hounds.release({ url: 'http://localhost:8080' })
     .on('error', console.error)
     .on('end', process.exit)
 
-const quarry = new Writable({ objectMode: true })
-quarry._write = function(chunk, enc, next) {
-    if (chunk) console.dir(chunk)
-    next()
-}
+const quarry = new Writable({
+    objectMode: true,
+    write: (chunk, enc, next) => {
+        console.dir(chunk)P
+        next()
+    }
+})
 
 hunt.pipe(quarry)
 ```
