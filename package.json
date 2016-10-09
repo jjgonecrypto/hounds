@@ -26,9 +26,11 @@
     "node": ">=4.2.0"
   },
   "homepage": "https://github.com/justinjmoses/hounds#readme",
+  "dependencies": {
+    "nightmare": "^2.7.0"
+  },
   "devDependencies": {
     "express": "^4.14.0",
-    "mocha": "^3.1.0",
-    "nightmare": "^2.7.0"
+    "mocha": "^3.1.0"
   }
 }
