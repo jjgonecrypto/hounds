@@ -20,13 +20,13 @@ describe('hounds', function() {
 
     beforeEach(() => {
         this.options = { url: 'http://localhost:4441' }
-        this.quarry = hounds.release(this.options)
+        this.hunt = hounds.release(this.options)
 
         this.assertErrorReceived = () => {}
 
-        this.output = new Writable({ objectMode: true })
+        this.quarry = new Writable({ objectMode: true })
         let callCount = 0
-        this.output._write = (chunk, enc, next) => {
+        this.quarry._write = (chunk, enc, next) => {
             if (chunk) {
                 callCount++
                 this.assertErrorReceived(chunk, callCount)
@@ -45,7 +45,7 @@ describe('hounds', function() {
             done()
         }
 
-        this.quarry.on('error', done).pipe(this.output)
+        this.hunt.on('error', done).pipe(this.quarry)
     })
 
     it('detects the error after DOM loaded', done => {
@@ -57,7 +57,7 @@ describe('hounds', function() {
             done()
         }
 
-        this.quarry.on('error', done).pipe(this.output)
+        this.hunt.on('error', done).pipe(this.quarry)
     })
 
     after(() => {

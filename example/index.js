@@ -11,14 +11,14 @@ const app = express()
 app.use(express.static(path.join(__dirname, '../test/fixture')))
 app.listen(4441)
 
-const quarry = hounds.release({ url: 'http://localhost:4441' })
+const hunt = hounds.release({ url: 'http://localhost:4441' })
     .on('error', console.error)
     .on('end', process.exit)
 
-const ws = new Writable({ objectMode: true })
-ws._write = function(chunk, enc, next) {
+const quarry = new Writable({ objectMode: true })
+quarry._write = function(chunk, enc, next) {
     if (chunk) console.dir(chunk)
     next()
 }
 
-quarry.pipe(ws)
+hunt.pipe(quarry)
