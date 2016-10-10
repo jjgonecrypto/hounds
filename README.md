@@ -35,7 +35,7 @@ const hunt = hounds.release({ url: 'http://localhost:8080' })
 const quarry = new Writable({
     objectMode: true,
     write: (chunk, enc, next) => {
-        console.dir(chunk)P
+        console.dir(chunk)
         next()
     }
 })
