@@ -14,6 +14,7 @@ app.listen(4441)
 const hunt = hounds.release({
     url: 'http://localhost:4441',
     keepAlive: true,
+    waitAfterLoadedFor: 1000,
     nightmare: {
         show: true, openDevTools: true
     }

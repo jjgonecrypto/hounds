@@ -9,6 +9,7 @@ exports.release = (options) => {
         read: () => {}
     })
 
+    const queue = [ options.url ]
     const nightmare = new Nightmare(options.nightmare)
 
     let session = nightmare
@@ -20,15 +21,27 @@ exports.release = (options) => {
                 stackTrace
             })
         })
-        .goto(options.url)
 
-    if (!options.keepAlive) {
-        session = session.end().then(() => {
-            quarry.push(null)
-        })
+    const processNextInQueue = () => {
+        if (!queue.length) {
+            if (!options.keepAlive) {
+                session.end().then(() => quarry.push(null))
+            }
+
+            return
+        }
+        const url = queue.pop()
+        session
+            .goto(url)
+            .wait(options.waitAfterLoadedFor)
+            .then(() => {
+                processNextInQueue()
+            })
+            .catch(e => quarry.emit('error', e))
     }
 
-    session.catch(e => quarry.emit('error', e))
+    processNextInQueue()
+
 
     return quarry
 }
