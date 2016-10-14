@@ -11,7 +11,7 @@ exports.release = (options) => {
 
     const nightmare = new Nightmare(options.nightmare)
 
-    nightmare
+    let session = nightmare
         .on('page', function(type, message, stack) {
             const stackTrace = stack.split('\n').map(l => l.trim())
             quarry.push({
@@ -21,11 +21,14 @@ exports.release = (options) => {
             })
         })
         .goto(options.url)
-        .end()
-        .then(() => {
+
+    if (!options.keepAlive) {
+        session = session.end().then(() => {
             quarry.push(null)
         })
-        .catch(e => quarry.emit('error', e))
+    }
+
+    session.catch(e => quarry.emit('error', e))
 
     return quarry
 }

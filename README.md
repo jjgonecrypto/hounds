@@ -18,9 +18,10 @@ Currently
 * ~~`0.3.0` Stream support (instead of promises)~~
     * ~~`0.3.1` Migrated to [nightmare](https://github.com/segmentio/nightmare) - 3x faster than Webdriver/Phantom2 and option to open up devTools~~
     * ~~`0.3.2` Stream usage cleanup~~
-* `0.4.0` Handle console errors that occur after `DOMContentLoaded` (with configurable timeout)
-* `0.5.0` Follow and track all internal links
-* `0.6.0` Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
+* ~~`0.4.0` Support to keep the session alive~~
+* *[pending]* Handle console errors that occur after `DOMContentLoaded` (with configurable timeout)
+* *[pending]* Follow and track all internal links
+* *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
 
 ##Usage
 
@@ -43,3 +44,16 @@ const quarry = new Writable({
 hunt.pipe(quarry)
 ```
 
+To show the Electron UI, with devTools open, and keep both alive, use the following settings:
+
+```javascript
+const hunt = hounds.release({
+    url: '...',
+    keepAlive: true,
+    nightmare: {
+        show: true, openDevTools: true
+    }
+}).on('error', console.error)
+```
+
+> All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported

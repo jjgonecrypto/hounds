@@ -11,9 +11,13 @@ const app = express()
 app.use(express.static(path.join(__dirname, '../test/fixture')))
 app.listen(4441)
 
-const hunt = hounds.release({ url: 'http://localhost:4441' })
-    .on('error', console.error)
-    .on('end', process.exit)
+const hunt = hounds.release({
+    url: 'http://localhost:4441',
+    keepAlive: true,
+    nightmare: {
+        show: true, openDevTools: true
+    }
+}).on('error', console.error)
 
 const quarry = new Writable({
     objectMode: true,
