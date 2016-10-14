@@ -8,6 +8,8 @@
             document.addEventListener('DOMContentLoaded', function (event) {
                 console.log('page loaded')
 
+                setTimeout(function() { throw Error('Error after 500ms') }, 500)
+
                 throw Error('Error after load')
             })
 

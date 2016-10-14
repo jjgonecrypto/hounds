@@ -18,9 +18,12 @@ describe('hounds', function() {
         server = app.listen(4441, done)
     })
 
+    after(() => {
+        server.close()
+    })
+
     beforeEach(() => {
         this.options = { url: 'http://localhost:4441' }
-        this.hunt = hounds.release(this.options)
 
         this.assertErrorReceived = () => {}
 
@@ -35,32 +38,52 @@ describe('hounds', function() {
         })
     })
 
-    it('detects the single console error', done => {
-        this.assertErrorReceived = (chunk, callCount) => {
-            if (callCount !== 1) return
-            assert.equal(this.options.url, chunk.url, 'URL is passed through')
-            assert.equal('Uncaught Error: Error inline script', chunk.message, 'Page error while loading is caught')
-            assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
-            done()
-        }
+    describe('returns error from a single page', () => {
+        beforeEach(() => {
+            this.hunt = hounds.release(this.options)
+        })
 
-        this.hunt.on('error', done).pipe(this.quarry)
+        it('detects the single console error', done => {
+            this.assertErrorReceived = (chunk, callCount) => {
+                if (callCount !== 1) return
+                assert.equal(this.options.url, chunk.url, 'URL is passed through')
+                assert.equal('Uncaught Error: Error inline script', chunk.message, 'Page error while loading is caught')
+                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                done()
+            }
+
+            this.hunt.on('error', done).pipe(this.quarry)
+        })
+
+        it('detects the error after DOM loaded', done => {
+            this.assertErrorReceived = (chunk, callCount) => {
+                if (callCount !== 2) return
+                assert.equal(this.options.url, chunk.url, 'URL is passed through')
+                assert.equal('Uncaught Error: Error after load', chunk.message, 'Page error after DOM is loaded')
+                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                done()
+            }
+
+            this.hunt.on('error', done).pipe(this.quarry)
+        })
     })
 
-    it('detects the error after DOM loaded', done => {
-        this.assertErrorReceived = (chunk, callCount) => {
-            if (callCount !== 2) return
-            assert.equal(this.options.url, chunk.url, 'URL is passed through')
-            assert.equal('Uncaught Error: Error after load', chunk.message, 'Page error after DOM is loaded')
-            assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
-            done()
-        }
+    describe('returns error async after load if kept alive', () => {
+        beforeEach(() => {
+            this.options.keepAlive = true
+            this.hunt = hounds.release(this.options)
+        })
 
-        this.hunt.on('error', done).pipe(this.quarry)
+        it('detects the single console error', done => {
+            this.assertErrorReceived = (chunk, callCount) => {
+                if (callCount !== 3) return
+                assert.equal(this.options.url, chunk.url, 'URL is passed through')
+                assert.equal('Uncaught Error: Error after 500ms', chunk.message, 'Page error 500ms after load is caught')
+                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                done()
+            }
+
+            this.hunt.on('error', done).pipe(this.quarry)
+        })
     })
-
-    after(() => {
-        server.close()
-    })
-
 })
