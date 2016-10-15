@@ -18,6 +18,7 @@ exports.release = (options) => {
 
     let session = nightmare
         .on('page', function(type, message, stack) {
+            if (type !== 'error') return
             const stackTrace = stack.split('\n').map(l => l.trim())
             quarry.push({
                 url,

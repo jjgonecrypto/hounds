@@ -13,10 +13,10 @@ app.listen(4441)
 
 const hunt = hounds.release({
     url: 'http://localhost:4441',
-    // keepAlive: true,
+    keepAlive: true,
     waitAfterLoadedFor: 600,
     nightmare: {
-        // show: true, openDevTools: true
+        show: true, openDevTools: true
     }
 }).on('error', console.error)
 .on('end', process.exit)

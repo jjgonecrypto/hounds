@@ -5,8 +5,11 @@
     <body>
         <a href="/first.html">first</a>
         <script>
-            document.addEventListener('DOMContentLoaded', function (event) {
+            /* eslint-env browser */
+            document.addEventListener('DOMContentLoaded', function () {
                 console.log('page loaded')
+
+                window.alert('heres an alert')
 
                 setTimeout(function() { throw Error('Error after 500ms') }, 500)
 
@@ -17,6 +20,9 @@
 
             console.error('error before load')
 
+            window.confirm('heres a confirm')
+
+            window.prompt('heres a prompt')
         </script>
     </body>
 </html>
