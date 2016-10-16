@@ -70,6 +70,14 @@ describe('hounds', function() {
 
             this.hunt.on('error', done).pipe(this.quarry)
         })
+
+        it('then it ends the stream after it finds three items', done => {
+            this.assertErrorReceived = (chunk, callCount) => {
+                if (callCount > 3) assert.fail(callCount, 3, 'Expected only 3 errors to have been found')
+            }
+
+            this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+        })
     })
 
 

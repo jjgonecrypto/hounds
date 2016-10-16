@@ -2,7 +2,7 @@
 
 ![](https://media.giphy.com/media/TVCqfX7rLyMuY/giphy.gif)
 
-A utility to smoke test a site by releasing hounds to follow all internal links and log any console errors. Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
+A utility to smoke test a site by releasing hounds to follow all internal links and log any uncaught page errors (ignores `console.error`). Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
 
 [![CircleCI](https://circleci.com/gh/justinjmoses/hounds.svg?style=svg)](https://circleci.com/gh/justinjmoses/hounds)
 
@@ -20,7 +20,7 @@ Currently
     * ~~`0.3.2` Stream usage cleanup~~
 * ~~`0.4.0` Support to keep the session alive via `keepAlive`~~
 * ~~`0.5.0` Handles console errors that occur after `DOMContentLoaded` (with configurable timeout `waitAfterLoadedFor (ms)`). Follows links now.~~
-* *[pending]* Prevent visiting the same link twice. 
+* ~~`0.6.0` Prevent visiting the same link twice.~~
 * *[pending]* Allow max number of links to follow or timeout.
 * *[pending]* Filter function to use for following links (defaults to implicit domain name, within same protocol://host:port)
 * *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
@@ -64,3 +64,8 @@ const hunt = hounds.release({
 * `keepAlive` don't end the stream or the nightmare session when complete (when combined with `nightmare.show`, allows you to interact with the browser when done).
 * `waitAfterLoadedFor` The number of milliseconds to wait after each page is loaded before following the next link in the queue
 * `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
+
+##Known Issues
+
+* `console.errors` not handled
+* `/index.html` and `/` are not treated as the same URL, and are both processed

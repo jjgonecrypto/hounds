@@ -9,15 +9,12 @@ exports.release = (options) => {
         read: () => {}
     })
 
+    const passed = {}
     const queue = [ options.url ]
     const nightmare = new Nightmare(options.nightmare)
 
-    // Note: this is potentially buggy (see pending test)
-    // We'd prefer that the page event below emit the URL at error time
-    let url
-
     let session = nightmare
-        .on('page', function(type, message, stack) {
+        .on('page', (type, message, stack, url) => {
             if (type !== 'error') return
             const stackTrace = stack.split('\n').map(l => l.trim())
             quarry.push({
@@ -35,7 +32,8 @@ exports.release = (options) => {
 
             return
         }
-        url = queue.shift()
+        const url = queue.shift()
+        passed[url] = passed[`${url}/`] = true
         session
             .goto(url)
             .wait(options.waitAfterLoadedFor)
@@ -46,7 +44,7 @@ exports.release = (options) => {
             })
             .then(anchors => {
                 anchors = Array.isArray(anchors) ? anchors : [ anchors ]
-                anchors.forEach(href => queue.push(href))
+                anchors.filter(href => !(href in passed)).forEach(href => queue.push(href))
                 processNextInQueue()
             })
             .catch(e => quarry.emit('error', e))
