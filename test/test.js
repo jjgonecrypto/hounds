@@ -24,7 +24,20 @@ describe('hounds', function() {
     })
 
     beforeEach(() => {
-        this.options = { url: 'http://localhost:4441/' }
+        this.assertLoggedTo = () => {}
+
+        let logCount = 0
+        this.options = {
+            url: 'http://localhost:4441/',
+
+            logTo: new Writable({
+                write: (chunk, enc, next) => {
+                    logCount++
+                    this.assertLoggedTo(chunk.toString(), logCount)
+                    next()
+                }
+            })
+        }
 
         this.assertErrorReceived = () => {}
 
@@ -165,6 +178,41 @@ describe('hounds', function() {
         })
     })
 
+    describe('when setup on a page with an external link', () => {
+        beforeEach(() => {
+            this.options.url += 'external.html'
+        })
+
+        describe('when released', () => {
+            beforeEach(() => {
+                this.hunt = hounds.release(this.options)
+            })
+
+            afterEach(() => {
+                this.hunt.unpipe(this.quarry)
+            })
+
+            it('then it does not process any internal links', done => {
+                this.assertLoggedTo = (url, logCount) => {
+                    if (logCount !== 1) {
+                        assert.fail(url, '', 'No URL should be visited')
+                        done()
+                    }
+                }
+
+                sinon.spy(this, 'assertLoggedTo')
+
+                this.hunt
+                    .on('error', done)
+                    .on('end', () => {
+                        assert.equal(this.assertLoggedTo.callCount, 1, 'Logged should only be called once')
+                        done()
+                    })
+                    .pipe(this.quarry)
+            })
+        })
+    })
+
     describe('when waiting on each page for 600ms after load before moving on', () => {
         beforeEach(() => {
             this.options.waitAfterLoadedFor = 600
@@ -181,24 +229,15 @@ describe('hounds', function() {
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error after 500ms', 'Page error 500ms after load is caught')
                 assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
-                done()
             }
 
-            this.hunt.on('error', done).pipe(this.quarry)
+            this.hunt.on('error', done).on('end', done).pipe(this.quarry)
         })
     })
 
 
     describe('when logTo is provided', () => {
         beforeEach(() => {
-            let logCount = 0
-            this.options.logTo = new Writable({
-                write: (chunk, enc, next) => {
-                    logCount++
-                    this.assertLoggedTo(chunk.toString(), logCount)
-                    next()
-                }
-            })
             this.hunt = hounds.release(this.options)
         })
 

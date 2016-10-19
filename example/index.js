@@ -13,12 +13,12 @@ app.use(express.static(path.join(__dirname, '../test/fixture')))
 app.listen(4441)
 
 const hunt = hounds.release({
-    url: 'http://localhost:4441/',
+    url: 'http://localhost:4441/external.html',
     // url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
     // url: 'http://motherboard.vice.com/en_us',
     // keepAlive: true,
-    // maxFollows: 1,
-    timeout: 10000,
+    maxFollows: 3,
+    // timeout: 10000,
     logTo: new Writable({
         write: (chunk, enc, next) => {
             const output = prettyjson.render({ url: chunk.toString() }, {
