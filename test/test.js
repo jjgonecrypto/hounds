@@ -5,6 +5,7 @@ const Writable = require('stream').Writable
 const express = require('express')
 const path = require('path')
 const assert = require('assert')
+const sinon = require('sinon')
 
 const hounds = require('../')
 
@@ -47,7 +48,7 @@ describe('hounds', function() {
             this.hunt.unpipe(this.quarry)
         })
 
-        it('detects the single console error', done => {
+        it('detects the first console error', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 1) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
@@ -59,7 +60,7 @@ describe('hounds', function() {
             this.hunt.on('error', done).pipe(this.quarry)
         })
 
-        it('detects the error after DOM loaded', done => {
+        it('detects the second error after DOM loaded', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 2) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
@@ -71,12 +72,28 @@ describe('hounds', function() {
             this.hunt.on('error', done).pipe(this.quarry)
         })
 
-        it('then it ends the stream after it finds three items', done => {
+        it('detects the third error from a followed page', done => {
             this.assertErrorReceived = (chunk, callCount) => {
-                if (callCount > 3) assert.fail(callCount, 3, 'Expected only 3 errors to have been found')
+                if (callCount !== 3) return
+                assert.equal(chunk.url, `${this.options.url}second.html`, 'URL is passed through')
+                assert.equal(chunk.message, 'Uncaught Error: This is supposed to happen', 'Page error on second.html caught')
+                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
+                done()
             }
 
-            this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+            this.hunt.on('error', done).pipe(this.quarry)
+        })
+
+        it('ends the stream after it finds three items', done => {
+            sinon.spy(this, 'assertErrorReceived')
+
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.equal(this.assertErrorReceived.callCount, 3, 'Should have emitted three events only')
+                    done()
+                })
+                .pipe(this.quarry)
         })
     })
 
@@ -96,7 +113,15 @@ describe('hounds', function() {
             })
 
             it('then it ends the stream when complete', done => {
-                this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+                sinon.spy(this, 'assertErrorReceived')
+
+                this.hunt
+                    .on('error', done)
+                    .on('end', () => {
+                        assert.equal(this.assertErrorReceived.callCount, 0, 'No errors should have been emitted')
+                        done()
+                    })
+                    .pipe(this.quarry)
             })
         })
 
@@ -140,24 +165,6 @@ describe('hounds', function() {
         })
     })
 
-    describe('returns error from followed page', () => {
-        beforeEach(() => {
-            this.hunt = hounds.release(this.options)
-        })
-
-        it('detects the console error in a followed page', done => {
-            this.assertErrorReceived = (chunk, callCount) => {
-                if (callCount !== 3) return
-                assert.equal(chunk.url, `${this.options.url}second.html`, 'URL is passed through')
-                assert.equal(chunk.message, 'Uncaught Error: This is supposed to happen', 'Page error on second.html caught')
-                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
-                done()
-            }
-
-            this.hunt.on('error', done).pipe(this.quarry)
-        })
-    })
-
     describe('when waiting on each page for 600ms after load before moving on', () => {
         beforeEach(() => {
             this.options.waitAfterLoadedFor = 600
@@ -168,7 +175,7 @@ describe('hounds', function() {
             this.hunt.unpipe(this.quarry)
         })
 
-        it('then it detects a timed out error of 500ms', done => {
+        it('then the third error is the original page\'s timed out error at 500ms', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 3) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
@@ -205,14 +212,19 @@ describe('hounds', function() {
                     assert.equal(url, this.options.url, 'Initial URL is logged')
                 else if (logCount === 2)
                     assert.equal(url, `${this.options.url}first.html`, 'Following URL is logged')
-                else if (logCount === 3) {
+                else if (logCount === 3)
                     assert.equal(url, `${this.options.url}second.html`, 'Following URL is logged')
-                    done()
-                } else
-                    assert.fail(logCount, 3, 'Logged should only be called three times')
             }
 
-            this.hunt.on('error', done).pipe(this.quarry)
+            sinon.spy(this, 'assertLoggedTo')
+
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.equal(this.assertLoggedTo.callCount, 3, 'Logged should only be called three times')
+                    done()
+                })
+                .pipe(this.quarry)
         })
     })
 
@@ -227,16 +239,19 @@ describe('hounds', function() {
         })
 
         it('then it does not detect errors on the third page', done => {
-            this.assertErrorReceived = (chunk, callCount) => {
-                if (callCount <= 2) return
+            sinon.spy(this, 'assertErrorReceived')
 
-                if (callCount > 2) {
-                    assert.fail(callCount, 2, 'Expected only 1 extra page followed, so no more than 2 errors should resolve')
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.equal(
+                        this.assertErrorReceived.callCount,
+                        2,
+                        'Expected only 1 extra page followed, so no more than 2 errors should resolve'
+                    )
                     done()
-                }
-            }
-
-            this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+                })
+                .pipe(this.quarry)
         })
     })
 
@@ -255,16 +270,14 @@ describe('hounds', function() {
             })
 
             it('then it only returns the first two errors', done => {
-                this.assertErrorReceived = (chunk, callCount) => {
-                    if (callCount <= 2) return
-
-                    if (callCount > 2) {
-                        assert.fail(callCount, 2, 'Expected only the first two errors to have been detected')
+                sinon.spy(this, 'assertErrorReceived')
+                this.hunt
+                    .on('error', done)
+                    .on('end', () => {
+                        assert.equal(this.assertErrorReceived.callCount, 2, 'Should have emitted two errors only')
                         done()
-                    }
-                }
-
-                this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+                    })
+                    .pipe(this.quarry)
             })
         })
 
@@ -280,19 +293,19 @@ describe('hounds', function() {
             })
 
             it('then it only returns the first three errors', done => {
-                this.assertErrorReceived = (chunk, callCount) => {
-                    if (callCount <= 3) return
-
-                    if (callCount > 3) {
-                        assert.fail(callCount, 3, 'Expected only the first three errors to have been detected')
+                sinon.spy(this, 'assertErrorReceived')
+                this.hunt
+                    .on('error', done)
+                    .on('end', () => {
+                        assert.equal(this.assertErrorReceived.callCount, 3, 'Should have emitted three errors only')
                         done()
-                    }
-                }
-
-                this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+                    })
+                    .pipe(this.quarry)
             })
         })
     })
+
+
 
     // Known bug:
     // We aren't guaranteed that the URL is still valid here,

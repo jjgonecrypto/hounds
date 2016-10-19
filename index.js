@@ -40,13 +40,17 @@ exports.release = (options) => {
             }
             return
         }
+
         const url = queue.shift()
+
         if (!url) {
             quarry.emit('error', new Error('No URL specified'))
             return
         }
+
         passed[url] = true
         if (options.logTo) options.logTo.write(url)
+
         session
             .goto(url)
             .wait(options.waitAfterLoadedFor)
