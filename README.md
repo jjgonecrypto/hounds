@@ -22,6 +22,7 @@ Currently
 * ~~`0.5.0` Handles console errors that occur after `DOMContentLoaded` (with configurable timeout `waitAfterLoadedFor (ms)`). Follows links now.~~
 * ~~`0.6.0` Prevent visiting the same link twice.~~
 * ~~`0.7.0` Allow max number of links to follow or timeout.~~
+* ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
 * *[pending]* Filter function to use for following links (defaults to implicit domain name, within same protocol://host:port)
 * *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
 

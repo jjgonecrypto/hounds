@@ -115,7 +115,29 @@ describe('hounds', function() {
                 setTimeout(done, 2000)
             })
         })
+    })
 
+    describe('when setup with no URL', () => {
+        beforeEach(() => {
+            delete this.options.url
+        })
+
+        describe('when released', () => {
+            beforeEach(() => {
+                this.hunt = hounds.release(this.options)
+            })
+
+            afterEach(() => {
+                this.hunt.unpipe(this.quarry)
+            })
+
+            it('then it ends the stream when complete', done => {
+                this.hunt
+                    .on('error', () => done())
+                    .on('end', () => { throw new Error('Expected error but instead was closed. ')})
+                    .pipe(this.quarry)
+            })
+        })
     })
 
     describe('returns error from followed page', () => {
