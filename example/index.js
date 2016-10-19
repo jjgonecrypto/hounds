@@ -12,8 +12,9 @@ app.use(express.static(path.join(__dirname, '../test/fixture')))
 app.listen(4441)
 
 const hunt = hounds.release({
-    url: 'http://localhost:4441',
+    url: 'http://localhost:4441/',
     // keepAlive: true,
+    // maxFollows: 1,
     waitAfterLoadedFor: 600,
     nightmare: {
         // show: true, openDevTools: true

@@ -63,6 +63,7 @@ const hunt = hounds.release({
 * `url` base URL to start from
 * `keepAlive` don't end the stream or the nightmare session when complete (when combined with `nightmare.show`, allows you to interact with the browser when done).
 * `waitAfterLoadedFor` The number of milliseconds to wait after each page is loaded before following the next link in the queue
+* `maxFollows` The maximum number of links to follow and track (the default is `Infinity`)
 * `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
 
 ##Known Issues

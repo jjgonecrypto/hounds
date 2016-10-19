@@ -186,8 +186,9 @@ describe('hounds', function() {
     // Known bug:
     // We aren't guaranteed that the URL is still valid here,
     // as it may have changed between when this error was thrown and now.
-    // A better solution is for nightmare to also emit `win.webContents.getURL()`
-    // as another argument in https://github.com/segmentio/nightmare/blob/master/lib/runner.js#L115
+    // Even when forking nightmare to also emit `win.webContents.getURL()`
+    // as another argument as in https://github.com/segmentio/nightmare/compare/master...justinjmoses:master
+    // we still don't gaurantee success here.
     xdescribe('when waiting on each page for 400ms after load before moving on', () => {
         beforeEach(() => {
             this.options.waitAfterLoadedFor = 400

@@ -9,11 +9,12 @@ exports.release = (options) => {
         read: () => {}
     })
 
+    const maxFollows = typeof options.maxFollows === 'number' ? options.maxFollows : Infinity
     const passed = {}
     const queue = [ options.url ]
     const nightmare = new Nightmare(options.nightmare)
 
-    let session = nightmare
+    const session = nightmare
         .on('page', (type, message, stack, url) => {
             if (type !== 'error') return
             const stackTrace = stack.split('\n').map(l => l.trim())
@@ -24,16 +25,19 @@ exports.release = (options) => {
             })
         })
 
-    const processNextInQueue = () => {
-        if (!queue.length) {
-            if (!options.keepAlive) {
-                session.end().then(() => quarry.push(null))
-            }
+    const leash = () => {
+        if (!options.keepAlive) {
+            session.end().then(() => quarry.push(null))
+        }
+    }
 
+    const processNextInQueue = () => {
+        if (!queue.length || Object.keys(passed).length > maxFollows) {
+            leash()
             return
         }
         const url = queue.shift()
-        passed[url] = passed[`${url}/`] = true
+        passed[url] = true
         session
             .goto(url)
             .wait(options.waitAfterLoadedFor)
@@ -44,7 +48,9 @@ exports.release = (options) => {
             })
             .then(anchors => {
                 anchors = Array.isArray(anchors) ? anchors : [ anchors ]
-                anchors.filter(href => !(href in passed)).forEach(href => queue.push(href))
+                anchors
+                    .filter(href => !(href in passed) && !(`${href.replace(/\/$/,'')}` in passed))
+                    .forEach(href => queue.push(href))
                 processNextInQueue()
             })
             .catch(e => quarry.emit('error', e))
