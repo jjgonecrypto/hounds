@@ -13,8 +13,8 @@ app.use(express.static(path.join(__dirname, '../test/fixture')))
 app.listen(4441)
 
 const hunt = hounds.release({
-    // url: 'http://localhost:4441/',
-    url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+    url: 'http://localhost:4441/',
+    // url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
     // url: 'http://motherboard.vice.com/en_us',
     // keepAlive: true,
     // maxFollows: 1,
@@ -30,11 +30,15 @@ const hunt = hounds.release({
             next()
         }
     }),
-    // waitAfterLoadedFor: 500,
+    // waitAfterLoadedFor: 1000,
     nightmare: {
         // show: true, openDevTools: true
     }
-}).on('error', console.error)
+})
+.on('error', err => {
+    console.error(err)
+    process.exit()
+})
 .on('end', process.exit)
 
 const quarry = new Writable({

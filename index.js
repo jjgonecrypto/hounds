@@ -4,9 +4,13 @@ const Readable = require('stream').Readable
 const Nightmare = require('nightmare')
 
 exports.release = (options) => {
+    let kickOff
     const quarry = new Readable({
         objectMode: true,
-        read: () => {}
+        read: () => {
+            kickOff || processNextInQueue()
+            kickOff = true
+        }
     })
 
     let maxFollows = typeof options.maxFollows === 'number' ? options.maxFollows : Infinity
@@ -37,6 +41,10 @@ exports.release = (options) => {
             return
         }
         const url = queue.shift()
+        if (!url) {
+            quarry.emit('error', new Error('No URL specified'))
+            return
+        }
         passed[url] = true
         if (options.logTo) options.logTo.write(url)
         session
@@ -56,9 +64,6 @@ exports.release = (options) => {
             })
             .catch(e => quarry.emit('error', e))
     }
-
-    processNextInQueue()
-
 
     return quarry
 }
