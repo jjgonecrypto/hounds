@@ -50,9 +50,9 @@ describe('hounds', function() {
         it('detects the single console error', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 1) return
-                assert.equal(this.options.url, chunk.url, 'URL is passed through')
-                assert.equal('Uncaught Error: Error inline script', chunk.message, 'Page error while loading is caught')
-                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                assert.equal(chunk.message, 'Uncaught Error: Error inline script', 'Page error while loading is caught')
+                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
                 done()
             }
 
@@ -62,9 +62,9 @@ describe('hounds', function() {
         it('detects the error after DOM loaded', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 2) return
-                assert.equal(this.options.url, chunk.url, 'URL is passed through')
-                assert.equal('Uncaught Error: Error after load', chunk.message, 'Page error after DOM is loaded')
-                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                assert.equal(chunk.message, 'Uncaught Error: Error after load', 'Page error after DOM is loaded')
+                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
                 done()
             }
 
@@ -126,9 +126,9 @@ describe('hounds', function() {
         it('detects the console error in a followed page', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 3) return
-                assert.equal(`${this.options.url}second.html`, chunk.url, 'URL is passed through')
-                assert.equal('Uncaught Error: This is supposed to happen', chunk.message, 'Page error on second.html caught')
-                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                assert.equal(chunk.url, `${this.options.url}second.html`, 'URL is passed through')
+                assert.equal(chunk.message, 'Uncaught Error: This is supposed to happen', 'Page error on second.html caught')
+                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
                 done()
             }
 
@@ -149,13 +149,37 @@ describe('hounds', function() {
         it('then it detects a timed out error of 500ms', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 3) return
-                assert.equal(this.options.url, chunk.url, 'URL is passed through')
-                assert.equal('Uncaught Error: Error after 500ms', chunk.message, 'Page error 500ms after load is caught')
-                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                assert.equal(chunk.message, 'Uncaught Error: Error after 500ms', 'Page error 500ms after load is caught')
+                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
                 done()
             }
 
             this.hunt.on('error', done).pipe(this.quarry)
+        })
+    })
+
+    describe('when maxFollows set to 1', () => {
+        beforeEach(() => {
+            this.options.maxFollows = 1
+            this.hunt = hounds.release(this.options)
+        })
+
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+        })
+
+        it('then it does not detect errors on the third page', done => {
+            this.assertErrorReceived = (chunk, callCount) => {
+                if (callCount <= 2) return
+
+                if (callCount > 2) {
+                    assert.fail(callCount, 2, 'Expected only 1 extra page followed, so no more than 2 errors should resolve')
+                    done()
+                }
+            }
+
+            this.hunt.on('error', done).on('end', done).pipe(this.quarry)
         })
     })
 
@@ -177,9 +201,9 @@ describe('hounds', function() {
         it('then it still detects the timed out error of 500ms, with the correct, previous URL', done => {
             this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 3) return
-                assert.equal(this.options.url, chunk.url, 'URL is passed through')
-                assert.equal('Uncaught Error: Error after 500ms', chunk.message, 'Page error 500ms after load is caught')
-                assert.equal(3, chunk.stackTrace.length, 'Page error stacktrace is captured')
+                assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                assert.equal(chunk.message, 'Uncaught Error: Error after 500ms', 'Page error 500ms after load is caught')
+                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
                 done()
             }
 
