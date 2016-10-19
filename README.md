@@ -4,28 +4,8 @@
 
 A utility to smoke test a site by releasing hounds to follow all internal links and log any uncaught page errors (ignores `console.error`). Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
 
-[![CircleCI](https://circleci.com/gh/justinjmoses/hounds.svg?style=svg)](https://circleci.com/gh/justinjmoses/hounds)
-
-##Upcoming Releases
-
-Currently
 [![npm version](https://badge.fury.io/js/hounds.svg)](https://badge.fury.io/js/hounds)
-[![GitHub version](https://badge.fury.io/gh/justinjmoses%2Fhounds.svg)](https://badge.fury.io/gh/justinjmoses%2Fhounds)
-
-> Note: Currently only returns errors within the actual URL (no link following just yet)
-
-* ~~`0.2.0` Supports a single url with a promise~~
-* ~~`0.3.0` Stream support (instead of promises)~~
-    * ~~`0.3.1` Migrated to [nightmare](https://github.com/segmentio/nightmare) - 3x faster than Webdriver/Phantom2 and option to open up devTools~~
-    * ~~`0.3.2` Stream usage cleanup~~
-* ~~`0.4.0` Support to keep the session alive via `keepAlive`~~
-* ~~`0.5.0` Handles console errors that occur after `DOMContentLoaded` (with configurable timeout `waitAfterLoadedFor (ms)`). Follows links now.~~
-* ~~`0.6.0` Prevent visiting the same link twice.~~
-* ~~`0.7.0` Allow max number of links to follow or timeout.~~
-* ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
-* ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
-* ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
-* *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
+[![GitHub version](https://badge.fury.io/gh/justinjmoses%2Fhounds.svg)](https://badge.fury.io/gh/justinjmoses%2Fhounds) [![CircleCI](https://circleci.com/gh/justinjmoses/hounds.svg?style=svg)](https://circleci.com/gh/justinjmoses/hounds)
 
 ##Usage
 
@@ -84,3 +64,18 @@ Try out `node example`
 
 ![image](https://cloud.githubusercontent.com/assets/799038/19538754/93f3ceda-9623-11e6-92ed-51ecb40393dd.png)
 
+##Upcoming Release
+* *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
+
+##Previous Releases
+* ~~`0.2.0` Supports a single url with a promise~~
+* ~~`0.3.0` Stream support (instead of promises)~~
+    * ~~`0.3.1` Migrated to [nightmare](https://github.com/segmentio/nightmare) - 3x faster than Webdriver/Phantom2 and option to open up devTools~~
+    * ~~`0.3.2` Stream usage cleanup~~
+* ~~`0.4.0` Support to keep the session alive via `keepAlive`~~
+* ~~`0.5.0` Handles console errors that occur after `DOMContentLoaded` (with configurable timeout `waitAfterLoadedFor (ms)`). Follows links now.~~
+* ~~`0.6.0` Prevent visiting the same link twice.~~
+* ~~`0.7.0` Allow max number of links to follow or timeout.~~
+* ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
+* ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
+* ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
