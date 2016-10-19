@@ -159,6 +159,41 @@ describe('hounds', function() {
         })
     })
 
+
+    describe('when logTo is provided', () => {
+        beforeEach(() => {
+            let logCount = 0
+            this.options.logTo = new Writable({
+                write: (chunk, enc, next) => {
+                    logCount++
+                    this.assertLoggedTo(chunk.toString(), logCount)
+                    next()
+                }
+            })
+            this.hunt = hounds.release(this.options)
+        })
+
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+        })
+
+        it('then it detects a timed out error of 500ms', done => {
+            this.assertLoggedTo = (url, logCount) => {
+                if (logCount === 1)
+                    assert.equal(url, this.options.url, 'Initial URL is logged')
+                else if (logCount === 2)
+                    assert.equal(url, `${this.options.url}first.html`, 'Following URL is logged')
+                else if (logCount === 3) {
+                    assert.equal(url, `${this.options.url}second.html`, 'Following URL is logged')
+                    done()
+                } else
+                    assert.fail(logCount, 3, 'Logged should only be called three times')
+            }
+
+            this.hunt.on('error', done).pipe(this.quarry)
+        })
+    })
+
     describe('when maxFollows set to 1', () => {
         beforeEach(() => {
             this.options.maxFollows = 1
@@ -235,7 +270,6 @@ describe('hounds', function() {
                 this.hunt.on('error', done).on('end', done).pipe(this.quarry)
             })
         })
-
     })
 
     // Known bug:
