@@ -183,6 +183,61 @@ describe('hounds', function() {
         })
     })
 
+    describe('when timeout set to 50', () => {
+        beforeEach(() => {
+            this.options.timeout = 50
+        })
+
+        describe('when the hunt is started', () => {
+            beforeEach(() => {
+                this.hunt = hounds.release(this.options)
+            })
+
+            afterEach(() => {
+                this.hunt.unpipe(this.quarry)
+            })
+
+            it('then it only returns the first two errors', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    if (callCount <= 2) return
+
+                    if (callCount > 2) {
+                        assert.fail(callCount, 2, 'Expected only the first two errors to have been detected')
+                        done()
+                    }
+                }
+
+                this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+            })
+        })
+
+        describe('when waitAfterLoadedFor is set to 750ms and maxFollows is 0', () => {
+            beforeEach(() => {
+                this.options.maxFollows = 0
+                this.options.waitAfterLoadedFor = 750
+                this.hunt = hounds.release(this.options)
+            })
+
+            afterEach(() => {
+                this.hunt.unpipe(this.quarry)
+            })
+
+            it('then it only returns the first three errors', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    if (callCount <= 3) return
+
+                    if (callCount > 3) {
+                        assert.fail(callCount, 3, 'Expected only the first three errors to have been detected')
+                        done()
+                    }
+                }
+
+                this.hunt.on('error', done).on('end', done).pipe(this.quarry)
+            })
+        })
+
+    })
+
     // Known bug:
     // We aren't guaranteed that the URL is still valid here,
     // as it may have changed between when this error was thrown and now.

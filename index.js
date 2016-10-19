@@ -9,7 +9,7 @@ exports.release = (options) => {
         read: () => {}
     })
 
-    const maxFollows = typeof options.maxFollows === 'number' ? options.maxFollows : Infinity
+    let maxFollows = typeof options.maxFollows === 'number' ? options.maxFollows : Infinity
     const passed = {}
     const queue = [ options.url ]
     const nightmare = new Nightmare(options.nightmare)
@@ -25,15 +25,15 @@ exports.release = (options) => {
             })
         })
 
-    const leash = () => {
-        if (!options.keepAlive) {
-            session.end().then(() => quarry.push(null))
-        }
+    if (typeof options.timeout === 'number') {
+        setTimeout(() => maxFollows = -Infinity, options.timeout)
     }
 
     const processNextInQueue = () => {
         if (!queue.length || Object.keys(passed).length > maxFollows) {
-            leash()
+            if (!options.keepAlive) {
+                session.end().then(() => quarry.push(null))
+            }
             return
         }
         const url = queue.shift()

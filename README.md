@@ -21,7 +21,7 @@ Currently
 * ~~`0.4.0` Support to keep the session alive via `keepAlive`~~
 * ~~`0.5.0` Handles console errors that occur after `DOMContentLoaded` (with configurable timeout `waitAfterLoadedFor (ms)`). Follows links now.~~
 * ~~`0.6.0` Prevent visiting the same link twice.~~
-* *[pending]* Allow max number of links to follow or timeout.
+* ~~`0.7.0` Allow max number of links to follow or timeout.~~
 * *[pending]* Filter function to use for following links (defaults to implicit domain name, within same protocol://host:port)
 * *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
 
@@ -64,6 +64,7 @@ const hunt = hounds.release({
 * `keepAlive` don't end the stream or the nightmare session when complete (when combined with `nightmare.show`, allows you to interact with the browser when done).
 * `waitAfterLoadedFor` The number of milliseconds to wait after each page is loaded before following the next link in the queue
 * `maxFollows` The maximum number of links to follow and track (the default is `Infinity`)
+* `timeout` The number of ms before ending the session. When the timeout is reached, the system will end on the next attempt to read from the queue (Note: this has no use when `keepAlive` is `true`). (No default)
 * `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
 
 ##Known Issues

@@ -15,6 +15,7 @@ const hunt = hounds.release({
     url: 'http://localhost:4441/',
     // keepAlive: true,
     // maxFollows: 1,
+    // timeout: 50,
     waitAfterLoadedFor: 600,
     nightmare: {
         // show: true, openDevTools: true
