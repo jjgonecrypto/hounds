@@ -65,6 +65,7 @@ const hunt = hounds.release({
 * `waitAfterLoadedFor` The number of milliseconds to wait after each page is loaded before following the next link in the queue
 * `maxFollows` The maximum number of links to follow and track (the default is `Infinity`)
 * `timeout` The number of ms before ending the session. When the timeout is reached, the system will end on the next attempt to read from the queue (Note: this has no use when `keepAlive` is `true`). (No default)
+* `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
 * `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
 
 ##Known Issues

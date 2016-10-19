@@ -38,6 +38,7 @@ exports.release = (options) => {
         }
         const url = queue.shift()
         passed[url] = true
+        if (options.logTo) options.logTo.write(url)
         session
             .goto(url)
             .wait(options.waitAfterLoadedFor)
