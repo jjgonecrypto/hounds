@@ -13,11 +13,12 @@ app.use(express.static(path.join(__dirname, '../test/fixture')))
 app.listen(4441)
 
 const hunt = hounds.release({
-    url: 'http://localhost:4441/external.html',
-    // url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+    // url: 'http://localhost:4441/external.html',
+    // url: 'http://localhost:4441',
+    url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
     // url: 'http://motherboard.vice.com/en_us',
     // keepAlive: true,
-    maxFollows: 3,
+    maxFollows: 30,
     // timeout: 10000,
     logTo: new Writable({
         write: (chunk, enc, next) => {

@@ -1,5 +1,6 @@
 'use strict'
 
+const urlHelper = require('url')
 const Readable = require('stream').Readable
 const Nightmare = require('nightmare')
 
@@ -33,6 +34,12 @@ exports.release = (options) => {
         setTimeout(() => maxFollows = -Infinity, options.timeout)
     }
 
+    const domainFilter = url => {
+        const baseUrlParts = urlHelper.parse(options.url)
+        const currentUrlParts = urlHelper.parse(url)
+        return baseUrlParts.host === currentUrlParts.host
+    }
+
     const processNextInQueue = () => {
         if (!queue.length || Object.keys(passed).length > maxFollows) {
             if (!options.keepAlive) {
@@ -63,6 +70,7 @@ exports.release = (options) => {
                 anchors = Array.isArray(anchors) ? anchors : [ anchors ]
                 anchors
                     .filter(href => !(href in passed) && !(`${href.replace(/\/$/,'')}` in passed))
+                    .filter(options.urlFilter || domainFilter)
                     .forEach(href => queue.push(href))
                 processNextInQueue()
             })

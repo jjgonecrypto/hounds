@@ -73,3 +73,4 @@ const hunt = hounds.release({
 
 * `console.errors` not handled
 * `/index.html` and `/` are not treated as the same URL, and are both processed
+* `unpipe()` won't stop the stream from finding results
