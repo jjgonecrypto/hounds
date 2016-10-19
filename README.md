@@ -75,3 +75,4 @@ const hunt = hounds.release({
 * `console.errors` not handled
 * `/index.html` and `/` are not treated as the same URL, and are both processed
 * `unpipe()` won't stop the stream from finding results
+* links which are hidden in the page are still detected, could use [jQuery's approach](https://github.com/jquery/jquery/blob/2d4f53416e5f74fa98e0c1d66b6f3c285a12f0ce/test/data/jquery-1.9.1.js#L7474) as an optional workaround

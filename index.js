@@ -67,8 +67,8 @@ exports.release = (options) => {
                 return [].slice.call(anchors).map(a => a.href)
             })
             .then(anchors => {
-                anchors = Array.isArray(anchors) ? anchors : [ anchors ]
-                anchors
+                anchors = new Set(Array.isArray(anchors) ? anchors : [ anchors ]) // unique values only
+                Array.from(anchors)
                     .filter(href => queue.indexOf(href) === -1 && !(href in passed) && !(`${href.replace(/\/$/,'')}` in passed))
                     .filter(options.urlFilter || domainFilter)
                     .forEach(href => queue.push(href))
