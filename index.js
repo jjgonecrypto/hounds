@@ -69,7 +69,7 @@ exports.release = (options) => {
             .then(anchors => {
                 anchors = Array.isArray(anchors) ? anchors : [ anchors ]
                 anchors
-                    .filter(href => !(href in passed) && !(`${href.replace(/\/$/,'')}` in passed))
+                    .filter(href => queue.indexOf(href) === -1 && !(href in passed) && !(`${href.replace(/\/$/,'')}` in passed))
                     .filter(options.urlFilter || domainFilter)
                     .forEach(href => queue.push(href))
                 processNextInQueue()

@@ -14,8 +14,8 @@ app.listen(4441)
 
 const hunt = hounds.release({
     // url: 'http://localhost:4441/external.html',
-    // url: 'http://localhost:4441',
-    url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+    url: 'http://localhost:4441/filter.html',
+    // url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
     // url: 'http://motherboard.vice.com/en_us',
     // keepAlive: true,
     maxFollows: 30,
@@ -31,6 +31,9 @@ const hunt = hounds.release({
             next()
         }
     }),
+    // urlFilter: url => {
+    //     return /^https:\/\/developer.mozilla.org\/en-US\/docs\/Web\//.test(url)
+    // },
     // waitAfterLoadedFor: 1000,
     nightmare: {
         // show: true, openDevTools: true

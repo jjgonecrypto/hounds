@@ -213,6 +213,86 @@ describe('hounds', function() {
         })
     })
 
+    describe('when setup on a page with longer link paths', () => {
+        let baseUrl
+        beforeEach(() => {
+            baseUrl = this.options.url
+            this.options.url += 'filter.html'
+        })
+
+        describe('when released', () => {
+            beforeEach(() => {
+                this.hunt = hounds.release(this.options)
+            })
+
+            afterEach(() => {
+                this.hunt.unpipe(this.quarry)
+            })
+
+            it('then it does not add extra links that are already in the queue', done => {
+                this.assertLoggedTo = (url, logCount) => {
+                    if (logCount === 1)
+                        assert.equal(url, `${this.options.url}`, 'Initial URL is logged')
+                    else if (logCount === 2)
+                        assert.equal(url, `${baseUrl}filter/1.html`, 'Following URL is logged')
+                    else if (logCount === 3)
+                        assert.equal(url, `${baseUrl}filter/2.html`, 'Following URL is logged')
+                    else if (logCount === 4)
+                        assert.equal(url, `${baseUrl}first.html`, 'Following URL is logged')
+                    else if (logCount === 5)
+                        assert.equal(url, `${baseUrl}second.html`, 'Following URL is logged')
+                    else if (logCount === 6)
+                        assert.equal(url, `${baseUrl}`, 'Following URL is logged')
+                }
+                sinon.spy(this, 'assertLoggedTo')
+
+                this.hunt
+                    .on('error', done)
+                    .on('end', () => {
+                        assert.equal(this.assertLoggedTo.callCount, 6, 'Logged should only be called six times')
+                        done()
+                    })
+                    .pipe(this.quarry)
+            })
+        })
+
+        describe('when setup with urlFilter', () => {
+            beforeEach(() => {
+                this.options.urlFilter = url => /filter\//.test(url)
+            })
+
+            describe('when released', () => {
+                beforeEach(() => {
+                    this.hunt = hounds.release(this.options)
+                })
+
+                afterEach(() => {
+                    this.hunt.unpipe(this.quarry)
+                })
+
+                it('then it honors the urlFilter predicate and only processes those links', done => {
+                    this.assertLoggedTo = (url, logCount) => {
+                        if (logCount === 1)
+                            assert.equal(url, `${this.options.url}`, 'Initial URL is logged')
+                        else if (logCount === 2)
+                            assert.equal(url, `${baseUrl}filter/1.html`, 'Following URL is logged')
+                        else if (logCount === 3)
+                            assert.equal(url, `${baseUrl}filter/2.html`, 'Following URL is logged')
+                    }
+                    sinon.spy(this, 'assertLoggedTo')
+
+                    this.hunt
+                        .on('error', done)
+                        .on('end', () => {
+                            assert.equal(this.assertLoggedTo.callCount, 3, 'Logged should only be called three times')
+                            done()
+                        })
+                        .pipe(this.quarry)
+                })
+            })
+        })
+    })
+
     describe('when waiting on each page for 600ms after load before moving on', () => {
         beforeEach(() => {
             this.options.waitAfterLoadedFor = 600

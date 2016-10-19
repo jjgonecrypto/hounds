@@ -23,7 +23,7 @@ Currently
 * ~~`0.6.0` Prevent visiting the same link twice.~~
 * ~~`0.7.0` Allow max number of links to follow or timeout.~~
 * ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
-* *[pending]* Filter function to use for following links (defaults to implicit domain name, within same protocol://host:port)
+* ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
 * *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
 
 ##Usage
@@ -67,6 +67,7 @@ const hunt = hounds.release({
 * `maxFollows` The maximum number of links to follow and track (the default is `Infinity`)
 * `timeout` The number of ms before ending the session. When the timeout is reached, the system will end on the next attempt to read from the queue (Note: this has no use when `keepAlive` is `true`). (No default)
 * `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
+* `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt
 * `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
 
 ##Known Issues
