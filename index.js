@@ -40,6 +40,11 @@ exports.release = (options) => {
         return baseUrlParts.host === currentUrlParts.host
     }
 
+    const urlFilter = url => {
+        if (options.urlFilter) return options.urlFilter(url, domainFilter(url))
+        else return domainFilter(url)
+    }
+
     const processNextInQueue = () => {
         if (!queue.length || Object.keys(passed).length > maxFollows) {
             if (!options.keepAlive) {
@@ -70,7 +75,7 @@ exports.release = (options) => {
                 anchors = new Set(Array.isArray(anchors) ? anchors : [ anchors ]) // unique values only
                 Array.from(anchors)
                     .filter(href => queue.indexOf(href) === -1 && !(href in passed) && !(`${href.replace(/\/$/,'')}` in passed))
-                    .filter(options.urlFilter || domainFilter)
+                    .filter(urlFilter)
                     .forEach(href => queue.push(href))
                 processNextInQueue()
             })

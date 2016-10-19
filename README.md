@@ -24,6 +24,7 @@ Currently
 * ~~`0.7.0` Allow max number of links to follow or timeout.~~
 * ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
 * ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
+* ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
 * *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
 
 ##Usage
@@ -67,7 +68,7 @@ const hunt = hounds.release({
 * `maxFollows` The maximum number of links to follow and track (the default is `Infinity`)
 * `timeout` The number of ms before ending the session. When the timeout is reached, the system will end on the next attempt to read from the queue (Note: this has no use when `keepAlive` is `true`). (No default)
 * `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
-* `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt
+* `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt. Second argument of `domainFiltered` is a bool stating whether or not the host matches (use it if you'd like to include that check in your filter)
 * `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
 
 ##Known Issues
@@ -76,3 +77,10 @@ const hunt = hounds.release({
 * `/index.html` and `/` are not treated as the same URL, and are both processed
 * `unpipe()` won't stop the stream from finding results
 * links which are hidden in the page are still detected, could use [jQuery's approach](https://github.com/jquery/jquery/blob/2d4f53416e5f74fa98e0c1d66b6f3c285a12f0ce/test/data/jquery-1.9.1.js#L7474) as an optional workaround
+
+##Example
+
+Try out `node example`
+
+![image](https://cloud.githubusercontent.com/assets/799038/19538754/93f3ceda-9623-11e6-92ed-51ecb40393dd.png)
+
