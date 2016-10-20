@@ -63,7 +63,15 @@ const hunt = hounds.release({
 * links which are hidden in the page are still detected, could use [jQuery's approach](https://github.com/jquery/jquery/blob/2d4f53416e5f74fa98e0c1d66b6f3c285a12f0ce/test/data/jquery-1.9.1.js#L7474) as an optional workaround
 
 ##Examples
-Try out `node examples` for a basic example based on the test fixtures
+
+First clone this repo and install to grab all dev dependencies via:
+```bash
+git clone git@github.com:justinjmoses/hounds.git
+cd hounds
+npm i
+```
+
+Then try out `node examples` for a basic example based on the test fixtures
 
 ![hounds-simple](https://cloud.githubusercontent.com/assets/799038/19570264/41277d88-96c7-11e6-9060-83b7590c0cfb.gif)
 
