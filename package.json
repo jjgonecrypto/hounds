@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/justinjmoses/hounds#readme",
   "dependencies": {
-    "nightmare": "https://github.com/justinjmoses/nightmare/tarball/85459ab35e97ece7e2b7570e8ae230f64a2b6248"
+    "nightmare": "https://github.com/justinjmoses/nightmare/tarball/3be865f67818fa2979fa89210231a4e94a92b259"
   },
   "devDependencies": {
     "express": "^4.14.0",

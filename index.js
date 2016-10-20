@@ -19,7 +19,7 @@ exports.release = (options) => {
     const queue = [ options.url ]
     const nightmare = new Nightmare(options.nightmare)
 
-    const session = nightmare
+    let session = nightmare
         .on('page', (type, message, stack, url) => {
             if (type !== 'error') return
             const stackTrace = stack.split('\n').map(l => l.trim())
@@ -47,8 +47,12 @@ exports.release = (options) => {
 
     const processNextInQueue = () => {
         if (!queue.length || Object.keys(passed).length > maxFollows) {
+            if (options.after) session = options.after(session)
+
             if (!options.keepAlive) {
                 session.end().then(() => quarry.push(null))
+            } else {
+                session.then() // ensure nightmare acts on last action in `after`, if any
             }
             return
         }
@@ -81,6 +85,8 @@ exports.release = (options) => {
             })
             .catch(e => quarry.emit('error', e))
     }
+
+    if (options.before) session = options.before(nightmare)
 
     return quarry
 }

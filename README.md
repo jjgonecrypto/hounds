@@ -1,8 +1,11 @@
 #hounds
 
+*Release the hounds* and smoke test any site. Sanity check after a large refactor, or plug into your CI tool of choice.<br />
 ![](https://media.giphy.com/media/TVCqfX7rLyMuY/giphy.gif)
 
-A utility to smoke test a site by releasing hounds to follow all internal links and log any uncaught page errors (ignores `console.error`). Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
+The beasts will follow all links (internal or otherwise) and round up any uncaught page errors. As a seamless unit, they will scour the field for their quarry by spanning out, containing an area, and expanding (breadth-first search). 
+
+Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
 
 [![npm version](https://badge.fury.io/js/hounds.svg)](https://badge.fury.io/js/hounds)
 [![GitHub version](https://badge.fury.io/gh/justinjmoses%2Fhounds.svg)](https://badge.fury.io/gh/justinjmoses%2Fhounds) [![CircleCI](https://circleci.com/gh/justinjmoses/hounds.svg?style=svg)](https://circleci.com/gh/justinjmoses/hounds)
@@ -49,25 +52,26 @@ const hunt = hounds.release({
 * `timeout` The number of ms before ending the session. When the timeout is reached, the system will end on the next attempt to read from the queue (Note: this has no use when `keepAlive` is `true`). (No default)
 * `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
 * `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt. Second argument of `domainFiltered` is a bool stating whether or not the host matches (use it if you'd like to include that check in your filter)
-* `nightmare` All [nightmare 2.7.0 options](https://github.com/segmentio/nightmare/tree/2.7.0#nightmareoptions) are supported
+* `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](examples/preAuth.jss#L14-L26))
+* `nightmare` All [nightmare 2.8.0 options](https://github.com/segmentio/nightmare/tree/2.8.0#nightmareoptions) are supported
 
 ##Known Issues
 
-* `console.errors` not handled
+* `console.errors` not currently handled
+* `404`s are not currently handled
 * `/index.html` and `/` are not treated as the same URL, and are both processed
+* Subdomains (including `www`) are treated as different hosts
 * `unpipe()` won't stop the stream from finding results
 * links which are hidden in the page are still detected, could use [jQuery's approach](https://github.com/jquery/jquery/blob/2d4f53416e5f74fa98e0c1d66b6f3c285a12f0ce/test/data/jquery-1.9.1.js#L7474) as an optional workaround
 
-##Example
-
-Try out `node example`
+##Examples
+Try out `node examples` for a basic example based on the test fixtures
 
 ![image](https://cloud.githubusercontent.com/assets/799038/19538754/93f3ceda-9623-11e6-92ed-51ecb40393dd.png)
 
-##Upcoming Release
-* *[pending]* Allow for `setup`/`teardown` actions in nightmare (such as login) (or perhaps just use cookies) 
+Try it against your 
 
-##Previous Releases
+##Changelog
 * ~~`0.2.0` Supports a single url with a promise~~
 * ~~`0.3.0` Stream support (instead of promises)~~
     * ~~`0.3.1` Migrated to [nightmare](https://github.com/segmentio/nightmare) - 3x faster than Webdriver/Phantom2 and option to open up devTools~~
@@ -79,3 +83,4 @@ Try out `node example`
 * ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
 * ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
 * ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
+* ~~`1.0.0` `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js))
