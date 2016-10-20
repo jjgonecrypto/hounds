@@ -65,11 +65,13 @@ const hunt = hounds.release({
 ##Examples
 Try out `node examples` for a basic example based on the test fixtures
 
-![image](https://cloud.githubusercontent.com/assets/799038/19538754/93f3ceda-9623-11e6-92ed-51ecb40393dd.png)
+![hounds-simple](https://cloud.githubusercontent.com/assets/799038/19570264/41277d88-96c7-11e6-9060-83b7590c0cfb.gif)
 
 Unleash them on the latest sites from HackerNews via `node examples/hackerNews`
 
 Or use them against a local site with auth (see [examples/preAuth.js](examples/preAuth.jss#L14-L26))
+
+![hounds-preauth](https://cloud.githubusercontent.com/assets/799038/19570191/ec2cd0a8-96c6-11e6-9586-f3b4fa9507b2.gif)
 
 ##Changelog
 * ~~`0.2.0` Supports a single url with a promise~~
@@ -83,4 +85,4 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 * ~~`0.8.0` Support for logTo writable stream for URLs processed, and correct error emitting bugfix.~~
 * ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
 * ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
-* ~~`1.0.0` `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js))
+* ~~`1.0.0` `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js))~~

@@ -9,8 +9,8 @@ const quarry = errorWriter()
 
 const hunt = hounds.release({
     url: 'http://localhost:8080',
-    maxFollows: 25,
-    waitAfterLoadedFor: 2500,
+    maxFollows: 5,
+    waitAfterLoadedFor: 1500,
     before: nightmare => {
         return nightmare
             .viewport(1200, 800)
@@ -26,7 +26,7 @@ const hunt = hounds.release({
     },
     logTo: urlLogger(),
     urlFilter: (url, domainFiltered) => {
-        return /\#/.test(url) && domainFiltered
+        return /\#./.test(url) && domainFiltered
     },
     nightmare: {
         show: true, openDevTools: true
