@@ -44,7 +44,6 @@ const hunt = hounds.release({
 ```
 
 ##Options
-
 * `url` base URL to start from
 * `keepAlive` don't end the stream or the nightmare session when complete (when combined with `nightmare.show`, allows you to interact with the browser when done).
 * `waitAfterLoadedFor` The number of milliseconds to wait after each page is loaded before following the next link in the queue
@@ -56,7 +55,6 @@ const hunt = hounds.release({
 * `nightmare` All [nightmare 2.8.0 options](https://github.com/segmentio/nightmare/tree/2.8.0#nightmareoptions) are supported
 
 ##Known Issues
-
 * `console.errors` not currently handled
 * `404`s are not currently handled
 * `/index.html` and `/` are not treated as the same URL, and are both processed
@@ -69,7 +67,9 @@ Try out `node examples` for a basic example based on the test fixtures
 
 ![image](https://cloud.githubusercontent.com/assets/799038/19538754/93f3ceda-9623-11e6-92ed-51ecb40393dd.png)
 
-Try it against your 
+Unleash them on the latest sites from HackerNews via `node examples/hackerNews`
+
+Or use them against a local site with auth (see [examples/preAuth.js](examples/preAuth.jss#L14-L26))
 
 ##Changelog
 * ~~`0.2.0` Supports a single url with a promise~~

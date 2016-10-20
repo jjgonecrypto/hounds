@@ -7,6 +7,8 @@ const path = require('path')
 const assert = require('assert')
 const sinon = require('sinon')
 
+const Nightmare = require('nightmare')
+
 const hounds = require('../')
 
 describe('hounds', function() {
@@ -424,7 +426,55 @@ describe('hounds', function() {
         })
     })
 
+    describe('when before provided', () => {
+        beforeEach(() => {
+            this.options.before = sinon.stub().returnsArg(0)
+            this.hunt = hounds.release(this.options)
+        })
 
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+        })
+
+        it('then it is invoked', () => {
+            assert.equal(this.options.before.callCount, 1, 'Before must be invoked')
+        })
+
+        it('and it passes through the nightmare instance', () => {
+            assert.ok(this.options.before.firstCall.args[0] instanceof Nightmare, 'Before must be invoked with nightmare instance')
+        })
+    })
+
+    describe('when after provided', () => {
+        beforeEach(() => {
+            this.options.after = sinon.stub().returnsArg(0)
+            this.hunt = hounds.release(this.options)
+        })
+
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+        })
+
+        it('then it is invoked', done => {
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.equal(this.options.after.callCount, 1, 'After must be invoked')
+                    done()
+                })
+                .pipe(this.quarry)
+        })
+
+        it('and it passes through the nightmare instance', done => {
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.ok(this.options.after.firstCall.args[0] instanceof Nightmare, 'After must be invoked with nightmare instance')
+                    done()
+                })
+                .pipe(this.quarry)
+        })
+    })
 
     // Known bug:
     // We aren't guaranteed that the URL is still valid here,
