@@ -66,7 +66,7 @@ const hunt = hounds.release({
 
 ```bash
 npm i hounds
-cd hounds/examples
+cd node_modules/hounds/examples
 npm i
 ```
 
