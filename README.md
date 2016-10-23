@@ -64,18 +64,17 @@ const hunt = hounds.release({
 
 ##Examples
 
-First clone this repo and install to grab all dev dependencies via:
 ```bash
-git clone git@github.com:justinjmoses/hounds.git
-cd hounds
+npm i hounds
+cd hounds/examples
 npm i
 ```
 
-Then try out `node examples` for a basic example based on the test fixtures
+Then try out `node .` for a basic example based on the test fixtures
 
 ![hounds-simple](https://cloud.githubusercontent.com/assets/799038/19570264/41277d88-96c7-11e6-9060-83b7590c0cfb.gif)
 
-Unleash them on the latest sites from HackerNews via `node examples/hackerNews`
+Unleash them on the latest sites from HackerNews via `node hackerNews`
 
 Or use them against a local site with auth (see [examples/preAuth.js](examples/preAuth.jss#L14-L26))
 
