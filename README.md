@@ -51,7 +51,7 @@ const hunt = hounds.release({
 * `timeout` The number of ms before ending the session. When the timeout is reached, the system will end on the next attempt to read from the queue (Note: this has no use when `keepAlive` is `true`). (No default)
 * `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
 * `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt. Second argument of `domainFiltered` is a bool stating whether or not the host matches (use it if you'd like to include that check in your filter)
-* `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](examples/preAuth.jss#L14-L26))
+* `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js#L14-L26))
 * `nightmare` All [nightmare 2.8.1 options](https://github.com/segmentio/nightmare/tree/2.8.1#nightmareoptions) are supported
 
 ##Known Issues
