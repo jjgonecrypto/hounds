@@ -1,4 +1,4 @@
-#hounds
+# hounds
 
 *Release the hounds* and smoke test any site. Sanity check after a large refactor, or plug into your CI tool of choice.<br />
 ![](https://media.giphy.com/media/TVCqfX7rLyMuY/giphy.gif)
@@ -10,7 +10,7 @@ Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron 
 [![npm version](https://badge.fury.io/js/hounds.svg)](https://badge.fury.io/js/hounds)
 [![GitHub version](https://badge.fury.io/gh/justinjmoses%2Fhounds.svg)](https://badge.fury.io/gh/justinjmoses%2Fhounds) [![CircleCI](https://circleci.com/gh/justinjmoses/hounds.svg?style=svg)](https://circleci.com/gh/justinjmoses/hounds)
 
-##Usage
+## Usage
 
 `npm i hounds`
 
@@ -43,7 +43,7 @@ const hunt = hounds.release({
 }).on('error', console.error)
 ```
 
-##Options
+## Options
 * `url` base URL to start from
 * `keepAlive` don't end the stream or the nightmare session when complete (when combined with `nightmare.show`, allows you to interact with the browser when done).
 * `waitAfterLoadedFor` The number of milliseconds to wait after each page is loaded before following the next link in the queue
@@ -54,7 +54,7 @@ const hunt = hounds.release({
 * `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js#L14-L26))
 * `nightmare` All [nightmare 2.10.0 options](https://github.com/segmentio/nightmare/tree/2.10.0#nightmareoptions) are supported
 
-##Known Issues
+## Known Issues
 * `console.errors` not currently handled
 * `404`s are not currently handled
 * `/index.html` and `/` are not treated as the same URL, and are both processed
@@ -62,7 +62,7 @@ const hunt = hounds.release({
 * `unpipe()` won't stop the stream from finding results
 * links which are hidden in the page are still detected, could use [jQuery's approach](https://github.com/jquery/jquery/blob/2d4f53416e5f74fa98e0c1d66b6f3c285a12f0ce/test/data/jquery-1.9.1.js#L7474) as an optional workaround
 
-##Examples
+## Examples
 
 ```bash
 npm i hounds
@@ -80,7 +80,7 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 
 ![hounds-preauth](https://cloud.githubusercontent.com/assets/799038/19570191/ec2cd0a8-96c6-11e6-9586-f3b4fa9507b2.gif)
 
-##Changelog
+## Changelog
 * ~~`0.2.0` Supports a single url with a promise~~
 * ~~`0.3.0` Stream support (instead of promises)~~
     * ~~`0.3.1` Migrated to [nightmare](https://github.com/segmentio/nightmare) - 3x faster than Webdriver/Phantom2 and option to open up devTools~~
