@@ -3,7 +3,7 @@
 *Release the hounds* and smoke test any site. Sanity check after a large refactor, or plug into your CI tool of choice.<br />
 ![](https://media.giphy.com/media/TVCqfX7rLyMuY/giphy.gif)
 
-The beasts will follow all links (internal or otherwise) and round up any uncaught page errors. As a seamless unit, they will scour the field for their quarry by spanning out, containing an area, and expanding (breadth-first search). 
+The beasts will follow all links (internal or otherwise) and round up any uncaught page errors. As a seamless unit, they will scour the field for their quarry by spanning out, containing an area, and expanding (breadth-first search).
 
 Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron webkit browser (with optional UI).
 
@@ -52,7 +52,7 @@ const hunt = hounds.release({
 * `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
 * `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt. Second argument of `domainFiltered` is a bool stating whether or not the host matches (use it if you'd like to include that check in your filter)
 * `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js#L14-L26))
-* `nightmare` All [nightmare 2.8.1 options](https://github.com/segmentio/nightmare/tree/2.8.1#nightmareoptions) are supported
+* `nightmare` All [nightmare 2.10.0 options](https://github.com/segmentio/nightmare/tree/2.10.0#nightmareoptions) are supported
 
 ##Known Issues
 * `console.errors` not currently handled
@@ -93,3 +93,5 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 * ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
 * ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
 * ~~`1.0.0` `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js))~~
+* ~~`1.1.0` Upgrading to nightmare 2.8.1
+* ~~`1.2.0` Upgrading to nightmare 2.10.0
