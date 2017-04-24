@@ -1,11 +1,8 @@
 'use strict'
 
-const urlLogger = require('./urlLogger')
-const errorWriter = require('./errorWriter')
-
 const hounds = require('../')
-
-const quarry = errorWriter()
+const quarry = hounds.writers.error()
+const logTo = hounds.writers.url()
 
 const hunt = hounds.release({
     url: 'http://localhost:8080',
@@ -25,7 +22,7 @@ const hunt = hounds.release({
             .goto('http://localhost:8080/user/signout')
     },
     keepAlive: true,
-    logTo: urlLogger(),
+    logTo,
     urlFilter: (url, domainFiltered) => {
         return /\#./.test(url) && domainFiltered
     },

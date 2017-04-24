@@ -1,11 +1,8 @@
 'use strict'
 
-const urlLogger = require('./urlLogger')
-const errorWriter = require('./errorWriter')
-
 const hounds = require('../')
-
-const quarry = errorWriter()
+const quarry = hounds.writers.error()
+const logTo = hounds.writers.url()
 
 const hunt = hounds.release({
     url: 'http://okr.mongodb.com',
@@ -25,7 +22,7 @@ const hunt = hounds.release({
             // .then(() => {})
             // .catch(console.error)
     },
-    logTo: urlLogger(),
+    logTo,
     nightmare: {
         show: true, openDevTools: true
     }

@@ -3,10 +3,9 @@
 const express = require('express')
 const path = require('path')
 
-const urlLogger = require('./urlLogger')
-const errorWriter = require('./errorWriter')
-
 const hounds = require('../')
+const quarry = hounds.writers.error()
+const logTo = hounds.writers.url()
 
 // start server to host
 const app = express()
@@ -15,14 +14,12 @@ app.listen(4441)
 
 const hunt = hounds.release({
     url: 'http://localhost:4441',
-    logTo: urlLogger()
+    logTo
 })
 .on('error', err => {
     console.error(err)
     process.exit()
 })
 .on('end', process.exit)
-
-const quarry = errorWriter()
 
 hunt.pipe(quarry)

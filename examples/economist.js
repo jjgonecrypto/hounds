@@ -1,17 +1,14 @@
 'use strict'
 
-const urlLogger = require('./urlLogger')
-const errorWriter = require('./errorWriter')
-
 const hounds = require('../')
-
-const quarry = errorWriter()
+const quarry = hounds.writers.error()
+const logTo = hounds.writers.url()
 
 const hunt = hounds.release({
     url: 'http://www.economist.com',
     timeout: 60e3,
     waitAfterLoadedFor: 500,
-    logTo: urlLogger(),
+    logTo,
     keepAlive: true,
     nightmare: {
         show: true, openDevTools: true

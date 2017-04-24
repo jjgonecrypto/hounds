@@ -1,17 +1,14 @@
 'use strict'
 
-const urlLogger = require('./urlLogger')
-const errorWriter = require('./errorWriter')
-
 const hounds = require('../')
-
-const quarry = errorWriter()
+const quarry = hounds.writers.error()
+const logTo = hounds.writers.url()
 
 const hunt = hounds.release({
     url: 'http://news.ycombinator.com',
     timeout: 60e3,
     waitAfterLoadedFor: 500,
-    logTo: urlLogger(),
+    logTo,
     urlFilter: url => {
         // external only
         return !/^https?:\/\/[a-zA-Z0-9]+\.?ycombinator\.com/.test(url)

@@ -16,6 +16,7 @@ Uses [nightmare](https://github.com/segmentio/nightmare) to fire up an Electron 
 
 ```javascript
 const hounds = require('hounds')
+
 const hunt = hounds.release({ url: 'http://localhost:8080' })
     .on('error', console.error)
     .on('end', process.exit)
@@ -31,17 +32,29 @@ const quarry = new Writable({
 hunt.pipe(quarry)
 ```
 
-To show the Electron UI, with devTools open, and keep both alive, use the following settings:
+To use the built-in stdout writers, you can use `hounds.writers.error` and `hounds.writers.url`:
 
 ```javascript
 const hunt = hounds.release({
+    url: 'http://localhost:8080',
+    logTo: hounds.writers.url()
+})
+
+hunt.pipe(hounds.writers.error())
+```
+
+To show the Electron UI, with devTools open, and keep both alive, use the following options when releasing the hounds:
+
+```javascript
+{
     url: '...',
     keepAlive: true,
     nightmare: {
         show: true, openDevTools: true
     }
-}).on('error', console.error)
+}
 ```
+
 
 ## Options
 * `url` base URL to start from
@@ -96,3 +109,4 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 * ~~`1.1.0` Upgrading to nightmare 2.8.1~~
 * ~~`1.2.0` Upgrading to nightmare 2.10.0~~
 * ~~`1.2.1` Fixing tests~~
+* ~~`1.3.0` Exposing the writers~~
