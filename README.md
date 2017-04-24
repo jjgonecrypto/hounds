@@ -93,5 +93,6 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 * ~~`0.9.0` By default, only links within same `hostname:port` are considered. Override with predicate function `urlFilter`~~
 * ~~`0.10.0` `urlFilter` also receives result of domain check as second argument. Bug fix: no dupes anchors in the one page~~
 * ~~`1.0.0` `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js))~~
-* ~~`1.1.0` Upgrading to nightmare 2.8.1
-* ~~`1.2.0` Upgrading to nightmare 2.10.0
+* ~~`1.1.0` Upgrading to nightmare 2.8.1~~
+* ~~`1.2.0` Upgrading to nightmare 2.10.0~~
+* ~~`1.2.1` Fixing tests~~
