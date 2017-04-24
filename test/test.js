@@ -68,7 +68,7 @@ describe('hounds', function() {
                 if (callCount !== 1) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error inline script', 'Page error while loading is caught')
-                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
+                assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
                 done()
             }
 
@@ -80,7 +80,7 @@ describe('hounds', function() {
                 if (callCount !== 2) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error after load', 'Page error after DOM is loaded')
-                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
+                assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
                 done()
             }
 
@@ -92,7 +92,7 @@ describe('hounds', function() {
                 if (callCount !== 3) return
                 assert.equal(chunk.url, `${this.options.url}second.html`, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: This is supposed to happen', 'Page error on second.html caught')
-                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
+                assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
                 done()
             }
 
@@ -310,7 +310,7 @@ describe('hounds', function() {
                 if (callCount !== 3) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error after 500ms', 'Page error 500ms after load is caught')
-                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
+                assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
             }
 
             this.hunt.on('error', done).on('end', done).pipe(this.quarry)
@@ -497,7 +497,7 @@ describe('hounds', function() {
                 if (callCount !== 3) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error after 500ms', 'Page error 500ms after load is caught')
-                assert.equal(chunk.stackTrace.length, 3, 'Page error stacktrace is captured')
+                assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
                 done()
             }
 

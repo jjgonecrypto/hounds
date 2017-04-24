@@ -65,7 +65,7 @@ exports.release = (options) => {
         }
 
         passed[url] = true
-        if (options.logTo) options.logTo.write(url)
+        if (options.logTo && quarry._readableState.flowing) options.logTo.write(url)
 
         session
             .goto(url)
