@@ -1,9 +1,12 @@
 {
   "name": "hounds",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "A utility to smoke test a site by releasing hounds to follow all internal links and log any console errors",
   "main": "index.js",
-  "files": ["lib/writers.js", "lib/hounds.js"],
+  "files": [
+    "lib/writers.js",
+    "lib/hounds.js"
+  ],
   "scripts": {
     "test": "mocha -t 9000 test"
   },
