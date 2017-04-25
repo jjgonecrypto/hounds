@@ -4,6 +4,7 @@ const Writable = require('stream').Writable
 
 const express = require('express')
 const path = require('path')
+const fs = require('fs-extra')
 const assert = require('assert')
 const sinon = require('sinon')
 
@@ -470,6 +471,39 @@ describe('hounds', function() {
                 .on('error', done)
                 .on('end', () => {
                     assert.ok(this.options.after.firstCall.args[0] instanceof Nightmare, 'After must be invoked with nightmare instance')
+                    done()
+                })
+                .pipe(this.quarry)
+        })
+    })
+
+    describe('when screenshot function is provided', () => {
+        let options
+        let outpath
+        let i = 0
+
+        beforeEach(() => {
+            outpath = path.join(__dirname, 'out')
+            fs.ensureDirSync(outpath)
+            options = Object.assign({
+                screenshot: sinon.spy(() => path.join(outpath, `temp_img_${i++}.png`))
+            }, this.options)
+            this.hunt = hounds.release(options)
+        })
+
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+            fs.removeSync(outpath)
+        })
+
+        it('invokes the screenshot for each page', done => {
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.equal(options.screenshot.callCount, 3, 'Screenshot must be called three times')
+                    assert.ok(fs.existsSync(path.join(outpath, 'temp_img_0.png')), 'Screenshot #1 exists')
+                    assert.ok(fs.existsSync(path.join(outpath, 'temp_img_1.png')), 'Screenshot #2 exists')
+                    assert.ok(fs.existsSync(path.join(outpath, 'temp_img_2.png')), 'Screenshot #3 exists')
                     done()
                 })
                 .pipe(this.quarry)

@@ -55,7 +55,6 @@ To show the Electron UI, with devTools open, and keep both alive, use the follow
 }
 ```
 
-
 ## Options
 * `url` base URL to start from
 * `keepAlive` don't end the stream or the nightmare session when complete (when combined with `nightmare.show`, allows you to interact with the browser when done).
@@ -65,9 +64,11 @@ To show the Electron UI, with devTools open, and keep both alive, use the follow
 * `logTo` An optional writable stream that all URLs attempting to be processed will be written to.
 * `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt. Second argument of `domainFiltered` is a bool stating whether or not the host matches (use it if you'd like to include that check in your filter)
 * `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js#L14-L26))
+* `screnshot` A function that given the current `url`, returns the path string of the PNG to save
 * `nightmare` All [nightmare 2.10.0 options](https://github.com/segmentio/nightmare/tree/2.10.0#nightmareoptions) are supported
 
 ## Known Issues
+* `screenshot` with outside domains causes nightmare to hang periodically ([ref issue on nightmare](https://github.com/segmentio/nightmare/issues/955))
 * `console.errors` not currently handled
 * `404`s are not currently handled
 * `/index.html` and `/` are not treated as the same URL, and are both processed
@@ -110,3 +111,4 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 * ~~`1.2.0` Upgrading to nightmare 2.10.0~~
 * ~~`1.2.1` Fixing tests~~
 * ~~`1.3.0` Exposing the writers~~
+* ~~`1.4.0` Support for `screenshot`~~

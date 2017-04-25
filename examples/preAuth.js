@@ -4,6 +4,8 @@ const hounds = require('../')
 const quarry = hounds.writers.error()
 const logTo = hounds.writers.url()
 
+let i = 1000
+
 const hunt = hounds.release({
     url: 'http://localhost:8080',
     maxFollows: 25,
@@ -20,6 +22,9 @@ const hunt = hounds.release({
     after: nightmare => {
         return nightmare
             .goto('http://localhost:8080/user/signout')
+    },
+    screenshot: (url) => {
+        return `${process.cwd()}/${i++}_${url.replace(/[^\w]/g, '-')}.png`
     },
     keepAlive: true,
     logTo,
