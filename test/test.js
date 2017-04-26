@@ -428,8 +428,14 @@ describe('hounds', function() {
     })
 
     describe('when before provided', () => {
+        let doBefore = () => {}
         beforeEach(() => {
-            this.options.before = sinon.stub().returnsArg(0)
+            sinon.spy(this, 'assertErrorReceived')
+            sinon.spy(this, 'assertLoggedTo')
+            this.options.before = nightmare => {
+                return doBefore(nightmare)
+            }
+            sinon.spy(this.options, 'before')
             this.hunt = hounds.release(this.options)
         })
 
@@ -437,12 +443,20 @@ describe('hounds', function() {
             this.hunt.unpipe(this.quarry)
         })
 
-        it('then it is invoked', () => {
-            assert.equal(this.options.before.callCount, 1, 'Before must be invoked')
-        })
-
-        it('and it passes through the nightmare instance', () => {
-            assert.ok(this.options.before.firstCall.args[0] instanceof Nightmare, 'Before must be invoked with nightmare instance')
+        it('then it is invoked with the Nightmare instance', done => {
+            doBefore = nightmare => {
+                return nightmare.wait(300).then(() => {
+                    assert.equal(this.assertErrorReceived.callCount, 0, 'Should not have emitted errors yet')
+                    assert.equal(this.assertLoggedTo.callCount, 0, 'Should not have logged anything yet')
+                }).catch(done)
+            }
+            this.hunt
+                .on('error', done)
+                .on('end', () => {
+                    assert.equal(this.options.before.callCount, 1, 'Before must have been invoked')
+                    done()
+                })
+                .pipe(this.quarry)
         })
     })
 

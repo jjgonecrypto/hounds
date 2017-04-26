@@ -113,3 +113,4 @@ Or use them against a local site with auth (see [examples/preAuth.js](examples/p
 * ~~`1.3.0` Exposing the writers~~
 * ~~`1.4.0` Support for `screenshot`~~
 * ~~`1.4.1` `prettyjson` to regular dependency~~
+* ~~`1.5.0` Bugfix: `before` is invoked during the initial run and the system waits until it completes~~
