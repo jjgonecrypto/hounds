@@ -1,6 +1,6 @@
 {
   "name": "hounds",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A utility to smoke test a site by releasing hounds to follow all internal links and log any console errors",
   "main": "index.js",
   "files": [
