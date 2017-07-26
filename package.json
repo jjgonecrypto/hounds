@@ -37,7 +37,7 @@
   "devDependencies": {
     "express": "~4.14.0",
     "fs-extra": "~4.0.0",
-    "mocha": "~3.3.0",
-    "sinon": "~2.1.0"
+    "mocha": "~3.4.2",
+    "sinon": "~2.4.0"
   }
 }
