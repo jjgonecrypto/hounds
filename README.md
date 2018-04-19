@@ -65,6 +65,7 @@ To show the Electron UI, with devTools open, and keep both alive, use the follow
 * `urlFilter` An optional predicate function, taking the current `url` as a parameter, and returning `true` or `false` as to whether or not to include it in the hunt. Second argument of `domainFiltered` is a bool stating whether or not the host matches (use it if you'd like to include that check in your filter)
 * `before` and `after` callbacks receive nightmare instance and if defined, must return it (see [examples/preAuth.js](https://github.com/justinjmoses/hounds/blob/master/examples/preAuth.js#L14-L26))
 * `screnshot` A function that given the current `url`, returns the path string of the PNG to save
+* `consoleLevel` A string corresponding to one of the [console logging levels](https://github.com/segmentio/nightmare/tree/3.0.1#onconsole-functiontype--arguments-). The default is `error`. In this way, console events that are not Javascript errors can be reported.
 * `nightmare` All [nightmare 3.0.1 options](https://github.com/segmentio/nightmare/tree/3.0.1#nightmareoptions) are supported
 
 ## Known Issues
