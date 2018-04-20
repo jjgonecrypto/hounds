@@ -44,10 +44,12 @@ describe('hounds', function() {
 
         this.assertErrorReceived = () => {}
 
+        this.filterEvents = () => { return true }
         let callCount = 0
         this.quarry = new Writable({
             objectMode: true,
             write: (chunk, enc, next) => {
+                if (!this.filterEvents(chunk)) return next()
                 callCount++
                 this.assertErrorReceived(chunk, callCount)
                 next()
@@ -125,6 +127,93 @@ describe('hounds', function() {
         })
     })
 
+    describe('receives appropriate level of console messages', () => {
+
+        // When testing console log level filter out JS errors for convenience
+        beforeEach(() => {
+            this.filterEvents = (chunk) => {
+                return typeof chunk.type === 'string'
+            }
+        })
+
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+            delete this.options.consoleLevel
+            this.filterEvents = () => { return true }
+        })
+
+        describe('with the console level set to \'error\'', () => {
+            beforeEach(() => {
+                this.options.consoleLevel = 'error'
+                this.hunt = hounds.release(this.options)
+            })
+
+            it('detects the console error', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    if (callCount !== 1) return
+                    assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                    assert.equal(chunk.type, 'error', 'Console event level is error')
+                    assert.equal(chunk.message, 'error before load', 'Console error is reported correctly')
+                    done()
+                }
+
+                this.hunt.on('error', done).pipe(this.quarry)
+            })
+        })
+
+        describe('with the console level set to \'warn\'', () => {
+            beforeEach(() => {
+                this.options.consoleLevel = 'warn'
+                this.hunt = hounds.release(this.options)
+            })
+
+            it('detects the error and the warning', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                    if (callCount === 1) {
+                        assert.equal(chunk.type, 'warn', 'Console event level is correct')
+                        assert.equal(chunk.message, 'test', 'Console message is reported correctly')
+                    } else if (callCount === 2) {
+                        assert.equal(chunk.type, 'error', 'Console event level is correct')
+                        assert.equal(chunk.message, 'error before load', 'Console message is reported correctly')
+                        done()
+                    } else {
+                        done(new Error('Called too many times'))
+                    }
+                }
+
+                this.hunt.on('error', done).pipe(this.quarry)
+            })
+        })
+
+        describe('with the console level set to \'log\'', () => {
+            beforeEach(() => {
+                this.options.consoleLevel = 'log'
+                this.hunt = hounds.release(this.options)
+            })
+
+            it('detects the error, the warning, and the log', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                    if (callCount === 1) {
+                        assert.equal(chunk.type, 'warn', 'Console event level is correct')
+                        assert.equal(chunk.message, 'test', 'Console message is reported correctly')
+                    } else if (callCount === 2) {
+                        assert.equal(chunk.type, 'error', 'Console event level is correct')
+                        assert.equal(chunk.message, 'error before load', 'Console message is reported correctly')
+                    } else if (callCount === 3) {
+                        assert.equal(chunk.type, 'log', 'Console event level is correct')
+                        assert.equal(chunk.message, 'page loaded', 'Console message is reported correctly')
+                        done()
+                    } else {
+                        done(new Error('Called too many times'))
+                    }
+                }
+
+                this.hunt.on('error', done).pipe(this.quarry)
+            })
+        })
+    })
 
     describe('when setup on an empty page', () => {
         beforeEach(() => {
