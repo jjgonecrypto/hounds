@@ -44,10 +44,12 @@ describe('hounds', function() {
 
         this.assertErrorReceived = () => {}
 
+        this.filterEvents = () => { return true }
         let callCount = 0
         this.quarry = new Writable({
             objectMode: true,
             write: (chunk, enc, next) => {
+                if (!this.filterEvents(chunk)) return next()
                 callCount++
                 this.assertErrorReceived(chunk, callCount)
                 next()
@@ -66,6 +68,18 @@ describe('hounds', function() {
 
         it('detects the first console error', done => {
             this.assertErrorReceived = (chunk, callCount) => {
+                if (callCount !== 2) return
+                assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                assert.equal(chunk.type, 'error', 'Console event type is error')
+                assert.equal(chunk.message, 'error before load', 'Console message is reported correctly')
+                done()
+            }
+
+            this.hunt.on('error', done).pipe(this.quarry)
+        })
+
+        it('detects the first script error', done => {
+            this.assertErrorReceived = (chunk, callCount) => {
                 if (callCount !== 1) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error inline script', 'Page error while loading is caught')
@@ -78,7 +92,7 @@ describe('hounds', function() {
 
         it('detects the second error after DOM loaded', done => {
             this.assertErrorReceived = (chunk, callCount) => {
-                if (callCount !== 2) return
+                if (callCount !== 3) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error after load', 'Page error after DOM is loaded')
                 assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
@@ -90,7 +104,7 @@ describe('hounds', function() {
 
         it('detects the third error from a followed page', done => {
             this.assertErrorReceived = (chunk, callCount) => {
-                if (callCount !== 3) return
+                if (callCount !== 4) return
                 assert.equal(chunk.url, `${this.options.url}second.html`, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: This is supposed to happen', 'Page error on second.html caught')
                 assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
@@ -100,19 +114,106 @@ describe('hounds', function() {
             this.hunt.on('error', done).pipe(this.quarry)
         })
 
-        it('ends the stream after it finds three items', done => {
+        it('ends the stream after it finds four items', done => {
             sinon.spy(this, 'assertErrorReceived')
 
             this.hunt
                 .on('error', done)
                 .on('end', () => {
-                    assert.equal(this.assertErrorReceived.callCount, 3, 'Should have emitted three events only')
+                    assert.equal(this.assertErrorReceived.callCount, 4, 'Should have emitted four events only')
                     done()
                 })
                 .pipe(this.quarry)
         })
     })
 
+    describe('receives appropriate level of console messages', () => {
+
+        // When testing console log level filter out JS errors for convenience
+        beforeEach(() => {
+            this.filterEvents = (chunk) => {
+                return typeof chunk.type === 'string'
+            }
+        })
+
+        afterEach(() => {
+            this.hunt.unpipe(this.quarry)
+            delete this.options.consoleLevel
+            this.filterEvents = () => { return true }
+        })
+
+        describe('with the console level set to \'error\'', () => {
+            beforeEach(() => {
+                this.options.consoleLevel = 'error'
+                this.hunt = hounds.release(this.options)
+            })
+
+            it('detects the console error', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    if (callCount !== 1) return
+                    assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                    assert.equal(chunk.type, 'error', 'Console event level is error')
+                    assert.equal(chunk.message, 'error before load', 'Console error is reported correctly')
+                    done()
+                }
+
+                this.hunt.on('error', done).pipe(this.quarry)
+            })
+        })
+
+        describe('with the console level set to \'warn\'', () => {
+            beforeEach(() => {
+                this.options.consoleLevel = 'warn'
+                this.hunt = hounds.release(this.options)
+            })
+
+            it('detects the error and the warning', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                    if (callCount === 1) {
+                        assert.equal(chunk.type, 'warn', 'Console event level is correct')
+                        assert.equal(chunk.message, 'test', 'Console message is reported correctly')
+                    } else if (callCount === 2) {
+                        assert.equal(chunk.type, 'error', 'Console event level is correct')
+                        assert.equal(chunk.message, 'error before load', 'Console message is reported correctly')
+                        done()
+                    } else {
+                        done(new Error('Called too many times'))
+                    }
+                }
+
+                this.hunt.on('error', done).pipe(this.quarry)
+            })
+        })
+
+        describe('with the console level set to \'log\'', () => {
+            beforeEach(() => {
+                this.options.consoleLevel = 'log'
+                this.hunt = hounds.release(this.options)
+            })
+
+            it('detects the error, the warning, and the log', done => {
+                this.assertErrorReceived = (chunk, callCount) => {
+                    assert.equal(chunk.url, this.options.url, 'URL is passed through')
+                    if (callCount === 1) {
+                        assert.equal(chunk.type, 'warn', 'Console event level is correct')
+                        assert.equal(chunk.message, 'test', 'Console message is reported correctly')
+                    } else if (callCount === 2) {
+                        assert.equal(chunk.type, 'error', 'Console event level is correct')
+                        assert.equal(chunk.message, 'error before load', 'Console message is reported correctly')
+                    } else if (callCount === 3) {
+                        assert.equal(chunk.type, 'log', 'Console event level is correct')
+                        assert.equal(chunk.message, 'page loaded', 'Console message is reported correctly')
+                        done()
+                    } else {
+                        done(new Error('Called too many times'))
+                    }
+                }
+
+                this.hunt.on('error', done).pipe(this.quarry)
+            })
+        })
+    })
 
     describe('when setup on an empty page', () => {
         beforeEach(() => {
@@ -308,7 +409,7 @@ describe('hounds', function() {
 
         it('then the third error is the original page\'s timed out error at 500ms', done => {
             this.assertErrorReceived = (chunk, callCount) => {
-                if (callCount !== 3) return
+                if (callCount !== 4) return
                 assert.equal(chunk.url, this.options.url, 'URL is passed through')
                 assert.equal(chunk.message, 'Uncaught Error: Error after 500ms', 'Page error 500ms after load is caught')
                 assert.equal(chunk.stackTrace.length, 2, 'Page error stacktrace is captured')
@@ -368,8 +469,8 @@ describe('hounds', function() {
                 .on('end', () => {
                     assert.equal(
                         this.assertErrorReceived.callCount,
-                        2,
-                        'Expected only 1 extra page followed, so no more than 2 errors should resolve'
+                        3,
+                        'Expected only 1 extra page followed, so no more than 3 errors should resolve'
                     )
                     done()
                 })
@@ -391,12 +492,12 @@ describe('hounds', function() {
                 this.hunt.unpipe(this.quarry)
             })
 
-            it('then it only returns the first two errors', done => {
+            it('then it only returns the first three errors', done => {
                 sinon.spy(this, 'assertErrorReceived')
                 this.hunt
                     .on('error', done)
                     .on('end', () => {
-                        assert.equal(this.assertErrorReceived.callCount, 2, 'Should have emitted two errors only')
+                        assert.equal(this.assertErrorReceived.callCount, 3, 'Should have emitted three errors only')
                         done()
                     })
                     .pipe(this.quarry)
@@ -414,12 +515,12 @@ describe('hounds', function() {
                 this.hunt.unpipe(this.quarry)
             })
 
-            it('then it only returns the first three errors', done => {
+            it('then it only returns the first four errors', done => {
                 sinon.spy(this, 'assertErrorReceived')
                 this.hunt
                     .on('error', done)
                     .on('end', () => {
-                        assert.equal(this.assertErrorReceived.callCount, 3, 'Should have emitted three errors only')
+                        assert.equal(this.assertErrorReceived.callCount, 4, 'Should have emitted four errors only')
                         done()
                     })
                     .pipe(this.quarry)
