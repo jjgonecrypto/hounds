@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/justinjmoses/hounds#readme",
   "dependencies": {
-    "nightmare": "^3.0.1",
+    "nightmare": "https://github.com/justinjmoses/nightmare/tarball/c165a779d14e5726333198e6ed3e1712ddfdf7c6",
     "prettyjson": "~1.1.3"
   },
   "devDependencies": {
