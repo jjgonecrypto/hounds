@@ -8,7 +8,7 @@
     "lib/hounds.js"
   ],
   "scripts": {
-    "test": "mocha -t 9000 --exit test"
+    "test": "mocha --exit test"
   },
   "repository": {
     "type": "git",
