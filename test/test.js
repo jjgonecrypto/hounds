@@ -13,6 +13,8 @@ const Nightmare = require('nightmare')
 const hounds = require('../')
 
 describe('hounds', function() {
+    this.timeout(20e3)
+
     let server
     before(done => {
         const app = express()
